@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36429.23 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventFlow.API", "EventFlow.API\EventFlow.API.csproj", "{B596D5BE-1B45-4517-931A-37855CCAA721}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B596D5BE-1B45-4517-931A-37855CCAA721}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B596D5BE-1B45-4517-931A-37855CCAA721}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B596D5BE-1B45-4517-931A-37855CCAA721}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B596D5BE-1B45-4517-931A-37855CCAA721}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6F643694-AEFB-4EED-857E-542A5C578FE1}
+	EndGlobalSection
+EndGlobal
