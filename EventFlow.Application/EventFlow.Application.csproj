@@ -6,4 +6,19 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Bookings\Requests\" />
+    <Folder Include="Bookings\Responses\" />
+    <Folder Include="GlobalSettings\Requests\" />
+    <Folder Include="GlobalSettings\Responses\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Mapster" Version="10.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EventFlow.Domain\EventFlow.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

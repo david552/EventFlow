@@ -20,5 +20,6 @@ namespace EventFlow.Domain.Users
         public  ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
 
+
     }
 }

@@ -20,10 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Seed\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\EventFlow.Domain\EventFlow.Domain.csproj" />
   </ItemGroup>
 

@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.25" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.25">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -16,10 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\EventFlow.Application\EventFlow.Application.csproj" />
+    <ProjectReference Include="..\EventFlow.Infrastructure\EventFlow.Infrastructure.csproj" />
     <ProjectReference Include="..\EventFlow.Persistence\EventFlow.Persistence.csproj" />
   </ItemGroup>
 
