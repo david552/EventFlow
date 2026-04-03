@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EventFlow.Application.GlobalSettings.Requests;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,8 @@ namespace EventFlow.Application.GlobalSettings
 {
     public interface IGlobalSettingsService
     {
+        public Task UpdateAsync(int id, GlobalSettingsRequestUpdateModel model, CancellationToken token);
+        public Task<int> GetByKeyAsync(string key, CancellationToken token);
+        public Task<int> CreateAsync(GlobalSettingsRequestCreateModel model, CancellationToken token);
     }
 }

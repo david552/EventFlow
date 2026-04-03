@@ -1,4 +1,5 @@
-﻿using EventFlow.Domain.Events;
+﻿using EventFlow.Domain.Constansts;
+using EventFlow.Domain.Events;
 using EventFlow.Domain.GlobalSettings;
 using EventFlow.Domain.Users;
 using EventFlow.Persistence.Context;
@@ -73,8 +74,8 @@ namespace EventFlow.Persistence.Seed
             {
                 var settings = new List<GlobalSettings>
                 {
-                    new GlobalSettings { Key = "EventEditAllowedDays", Value = 3 },
-                    new GlobalSettings { Key = "BookingExpirationHours", Value = 24 }
+                    new GlobalSettings { Key = GlobalSettingsKeys.EventEditAllowedDays, Value = 3 },
+                    new GlobalSettings { Key = GlobalSettingsKeys.BookingExpirationHours, Value = 1 }
                 };
 
                 await context.GlobalSettings.AddRangeAsync(settings);

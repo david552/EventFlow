@@ -45,7 +45,7 @@ builder.Services.AddSwaggerGen(opt =>
         }
     });
 });
-
+builder.Services.AddMemoryCache();
 builder.Services.AddServices();
 
 

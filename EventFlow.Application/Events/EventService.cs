@@ -1,6 +1,9 @@
-﻿using EventFlow.Application.Events.Repositories;
+﻿using EventFlow.Application.Bookings.Repositories;
+using EventFlow.Application.Events.Repositories;
 using EventFlow.Application.Events.Requests;
 using EventFlow.Application.Events.Responses;
+using EventFlow.Application.GlobalSettings;
+using EventFlow.Domain.Constansts;
 using EventFlow.Domain.Events;
 using Mapster;
 using System;
@@ -14,24 +17,27 @@ namespace EventFlow.Application.Events
     public class EventService : IEventService
     {
         readonly IUnitOfWork _unitOfWork;
-        readonly IEventRepository _repository;
-        public EventService(IUnitOfWork unitOfWork, IEventRepository repository)
+        readonly IEventRepository _eventRepository;
+        readonly IGlobalSettingsService _globalSettingsService;
+
+        public EventService(IUnitOfWork unitOfWork, IEventRepository eventRepository, IGlobalSettingsService globalSettingsService)
         {
-            _repository = repository;
+            _eventRepository = eventRepository;
             _unitOfWork = unitOfWork;
+            _globalSettingsService = globalSettingsService;
 
         }
 
         public async Task<List<EventResponseModel>> GetAllVisibleAsync(CancellationToken token)
         {
-            var visiblEvents = await _repository.GetVisibleEventsAsync(token);
+            var visiblEvents = await _eventRepository.GetVisibleEventsAsync(token);
 
             return visiblEvents.Adapt<List<EventResponseModel>>();
         }
 
         public async Task<EventResponseModel?> GetByIdAsync(int id, CancellationToken token)
         {
-            var @event = await _repository.GetAsync(token, id);
+            var @event = await _eventRepository.GetAsync(token, id);
 
             if (@event != null)
                 return @event.Adapt<EventResponseModel>();
@@ -39,7 +45,7 @@ namespace EventFlow.Application.Events
         }
         public async Task UpdateAsync(int id, EventRequestUpdateModel model, int currentUserId, CancellationToken token)
         {
-            var existingEvent = await _repository.GetAsync(token, id);
+            var existingEvent = await _eventRepository.GetAsync(token, id);
 
 
             if (existingEvent == null )
@@ -49,7 +55,7 @@ namespace EventFlow.Application.Events
                 throw new Exception("You don't have permission to update this event.");
             }
 
-            int allowedDaysForUpdate = 3;
+            int allowedDaysForUpdate = await _globalSettingsService.GetByKeyAsync(GlobalSettingsKeys.EventEditAllowedDays, token);
 
             if (DateTime.Now > existingEvent.CreatedAt.AddDays(allowedDaysForUpdate))
             {
@@ -59,7 +65,7 @@ namespace EventFlow.Application.Events
             model.Adapt(existingEvent);
 
 
-            _repository.Update(existingEvent);
+            _eventRepository.Update(existingEvent);
 
             await _unitOfWork.SaveChanges(token);
         }
@@ -72,14 +78,14 @@ namespace EventFlow.Application.Events
             @event.CreatedAt = DateTime.Now;
             @event.AvailableTickets = @event.TotalTickets;
 
-            await _repository.AddAsync(token, @event);
+            await _eventRepository.AddAsync(token, @event);
             await _unitOfWork.SaveChanges(token);
             return @event.Id;
         }
 
         public async  Task DeleteAsync(int id, CancellationToken token)
         {
-            await _repository.RemoveAsync(token, id);
+            await _eventRepository.RemoveAsync(token, id);
             await _unitOfWork.SaveChanges(token);
         }
 
