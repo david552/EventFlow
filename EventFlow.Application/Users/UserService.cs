@@ -1,14 +1,15 @@
-﻿using EventFlow.Application.Users.Requests;
+﻿using EventFlow.Application.Exceptions;
+using EventFlow.Application.Users.Repositories;
+using EventFlow.Application.Users.Requests;
 using EventFlow.Application.Users.Responses;
+using EventFlow.Domain.Users;
+using Mapster;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EventFlow.Domain.Users;
-using EventFlow.Application.Users.Repositories;
-using Mapster;
 namespace EventFlow.Application.Users
 {
     public class UserService : IUserService
@@ -25,13 +26,13 @@ namespace EventFlow.Application.Users
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null)
-                throw new Exception("User does not Exists");
+                throw new NotFoundException("User not found", "UserNotFound");
 
             if(!await _userManager.IsInRoleAsync(user, "Moderator"))
             {
                 var result = await _userManager.AddToRoleAsync(user, "Moderator");
                 if (!result.Succeeded)
-                    throw new Exception("Failed to assign Moderator role.");
+                    throw new BadRequestException("Failed to assign Moderator role", "RoleAssignmentFailed");
             }
             
         }
@@ -40,12 +41,12 @@ namespace EventFlow.Application.Users
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null)
-                throw new Exception("Such User Does Not Exists");
+                throw new NotFoundException("User not found", "UserNotFound");
             var result = await _userManager.DeleteAsync(user);
 
             if (!result.Succeeded)
             {
-                throw new Exception($"Failed to delete user");
+                throw new BadRequestException($"Failed to delete user", "UserDeletionFailed");
             }
 
         }
@@ -69,7 +70,7 @@ namespace EventFlow.Application.Users
             var user = await _repository.GetAsync(token, userId);
 
             if (user == null)
-                throw new Exception("User Not Found");
+                throw new NotFoundException("User Not Found", "UserNotFound");
 
             var response = user.Adapt<UserResponseModel>();
             response.Roles = (await _userManager.GetRolesAsync(user)).ToList();
@@ -82,7 +83,7 @@ namespace EventFlow.Application.Users
             var user = await _userManager.FindByEmailAsync(model.Email);
 
             if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
-                throw new Exception("Invalid email or password"); 
+                throw new BadRequestException("Invalid email or password", "InvalidCredentials"); 
 
             var roles = await _userManager.GetRolesAsync(user);
 
@@ -98,12 +99,10 @@ namespace EventFlow.Application.Users
 
         public async Task RegisterAsync(UserRegisterRequestModel model, CancellationToken token)
         {
-            if (model.Password != model.ConfirmPassword)
-                throw new Exception("Passwords do not match");
 
             var existingUser = await _userManager.FindByEmailAsync(model.Email);
             if (existingUser != null)
-                throw new Exception("User with this email already exists");
+                throw new BadRequestException("User with this email already exists", "EmailAlreadyExists");
 
             var user = model.Adapt<User>();
             user.UserName = model.Username;
@@ -112,7 +111,7 @@ namespace EventFlow.Application.Users
 
             if (!result.Succeeded)
             { 
-                throw new Exception($"Registration failed");
+                throw new BadRequestException($"Registration failed", "RegistrationFailed");
             }
 
           

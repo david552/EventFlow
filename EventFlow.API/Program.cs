@@ -1,5 +1,6 @@
 ﻿using EventFlow.API.infrastructures.Extensions;
 using EventFlow.API.infrastructures.JWT;
+using EventFlow.API.Middlewares;
 using EventFlow.Application.Users.Validators;
 using EventFlow.Domain.Users;
 using EventFlow.Persistence.Context;
@@ -69,6 +70,9 @@ builder.Services.Configure<JWTConfiguration>(builder.Configuration.GetSection(na
 
 
 var app = builder.Build();
+
+app.UseMiddleware<GlobalExceptionMiddleware>();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
