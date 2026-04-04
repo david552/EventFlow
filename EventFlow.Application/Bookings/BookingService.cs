@@ -68,7 +68,7 @@ namespace EventFlow.Application.Bookings
 
         }
 
-        public async Task<int> CreateAsync(BookingRequestModel model, int currentUserId, CancellationToken token)
+        public async Task<int> CreateAsync(BookingRequestCreateModel model, int currentUserId, CancellationToken token)
         {
             var @event = await _eventRepository.GetAsync(token, model.EventId);
             if (@event == null)
@@ -88,17 +88,10 @@ namespace EventFlow.Application.Bookings
             if (model.BookedTicketsCount > maxTicketUserCouldBook)
                 throw new Exception($"You have reached the limit. You can only book {maxTicketUserCouldBook} more tickets.");
             var booking = model.Adapt<Booking>();
-            
-            if(model.IsPurchased == true)
-            {
-                booking.ExpirationTime = DateTime.MaxValue;
-                booking.IsPurchased = true;
-            }
-            else
-            {
-                booking.IsPurchased = false;
-                booking.ExpirationTime = DateTime.Now.AddHours(bookingExpiratioinHours);
-            }
+          
+
+            booking.IsPurchased = false;
+            booking.ExpirationTime = DateTime.Now.AddHours(bookingExpiratioinHours);
             booking.UserId = currentUserId;
             booking.CreatedAt = DateTime.Now;
 

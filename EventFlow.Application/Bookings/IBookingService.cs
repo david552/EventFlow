@@ -10,7 +10,7 @@ namespace EventFlow.Application.Bookings
 {
     public interface IBookingService
     {
-        Task<int> CreateAsync(BookingRequestModel model, int currentUserId, CancellationToken token);
+        Task<int> CreateAsync(BookingRequestCreateModel model, int currentUserId, CancellationToken token);
 
         Task<List<BookingResponseModel>> GetUserBookingsAsync(int userId, CancellationToken token);
 

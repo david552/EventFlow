@@ -8,11 +8,10 @@ using System.Threading.Tasks;
 
 namespace EventFlow.Application.Bookings.Requests
 {
-    public class BookingRequestModel
+    public class BookingRequestCreateModel
     {
        
         public int BookedTicketsCount { get; set; }
         public int EventId { get; set; }
-        public bool IsPurchased { get; set; }
     }
 }

@@ -1,8 +1,11 @@
 ﻿using EventFlow.API.infrastructures.Extensions;
 using EventFlow.API.infrastructures.JWT;
+using EventFlow.Application.Users.Validators;
 using EventFlow.Domain.Users;
 using EventFlow.Persistence.Context;
 using EventFlow.Persistence.Seed;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -47,8 +50,8 @@ builder.Services.AddSwaggerGen(opt =>
 });
 builder.Services.AddMemoryCache();
 builder.Services.AddServices();
-
-
+builder.Services.AddValidatorsFromAssembly(typeof(UserRegisterRequestModelValidator).Assembly);
+builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddTokenAuthentication(builder.Configuration["JWTConfiguration:Secret"]);
 
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

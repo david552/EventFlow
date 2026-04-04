@@ -10,6 +10,7 @@ namespace EventFlow.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class BookingController : ControllerBase
     {
         private readonly IBookingService _bookingService;
@@ -20,8 +21,7 @@ namespace EventFlow.API.Controllers
         }
 
         [HttpPost]
-        [Authorize]
-        public async Task<int> CreateAsync(BookingRequestModel model,CancellationToken token)
+        public async Task<int> CreateAsync(BookingRequestCreateModel model,CancellationToken token)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var currentUserId = int.Parse(userIdClaim);
@@ -30,7 +30,6 @@ namespace EventFlow.API.Controllers
         }
 
         [HttpPut("{id}/buy")]
-        [Authorize]
         public async Task BuyAsync(int id, CancellationToken token)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -39,8 +38,7 @@ namespace EventFlow.API.Controllers
         }
 
         [HttpDelete("{id}/cancel")]
-        [Authorize]
-        public async Task TaskCancelAsync(int id, CancellationToken token)
+        public async Task CancelAsync(int id, CancellationToken token)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var currentUserId = int.Parse(userIdClaim);
