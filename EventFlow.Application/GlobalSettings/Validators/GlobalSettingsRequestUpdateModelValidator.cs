@@ -1,4 +1,5 @@
 ﻿using EventFlow.Application.GlobalSettings.Requests;
+using EventFlow.Application.Localization;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace EventFlow.Application.GlobalSettings.Validators
         public GlobalSettingsRequestUpdateModelValidator()
         {
             RuleFor(x => x.Value)
-               .GreaterThanOrEqualTo(0).WithMessage("Value of global settings must be greater than or equal to 0");
+               .GreaterThanOrEqualTo(0).WithMessage(x => ValidationMessages.GlobalSettingValueMinimum);
         }
     }
 }

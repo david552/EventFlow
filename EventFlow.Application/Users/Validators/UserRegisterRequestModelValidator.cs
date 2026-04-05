@@ -1,4 +1,5 @@
-﻿using EventFlow.Application.Users.Requests;
+﻿using EventFlow.Application.Localization;
+using EventFlow.Application.Users.Requests;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
@@ -13,31 +14,31 @@ namespace EventFlow.Application.Users.Validators
         public UserRegisterRequestModelValidator()
         {
             RuleFor(x => x.FirstName)
-                .NotEmpty().WithMessage("First Name is required")
-                .MaximumLength(50).WithMessage("First Name cannot exceed 50 characters.");
+                .NotEmpty().WithMessage(x => ValidationMessages.FirstNameRequired)
+                .MaximumLength(50).WithMessage(x => ValidationMessages.FirstNameMaxLength);
 
             RuleFor(x => x.LastName)
-                .NotEmpty().WithMessage("Last Name is required")
-                .MaximumLength(50).WithMessage("Last Name cannot exceed 50 characters.");
+                .NotEmpty().WithMessage(x => ValidationMessages.LastNameRequired)
+                .MaximumLength(50).WithMessage(x => ValidationMessages.LastNameMaxLength);
 
             RuleFor(x => x.Username)
-                .NotEmpty().WithMessage("Username is required")
-                .MinimumLength(3).WithMessage("Username must be at least 3 characters long")
-                .MaximumLength(50).WithMessage("Username cannot exceed 50 characters");
+                .NotEmpty().WithMessage(x => ValidationMessages.UsernameRequired)
+                .MinimumLength(3).WithMessage(x => ValidationMessages.UsernameMinLength)
+                .MaximumLength(50).WithMessage(x => ValidationMessages.UsernameMaxLength);
 
             RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email is required")
-                .EmailAddress().WithMessage("A valid email address is required.")
+                .NotEmpty().WithMessage(x => ValidationMessages.EmailRequired)
+                .EmailAddress().WithMessage(x => ValidationMessages.InvalidEmailFormat)
                 .Matches(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
-                .WithMessage("Email can only contain English letters, numbers, and standard symbols.");
+                .WithMessage(x => ValidationMessages.InvalidEmailFormat);
 
             RuleFor(x => x.Password)
-                .NotEmpty().WithMessage("Password is required")
-                .MinimumLength(6).WithMessage("Password must be at least 6 characters long");
+                .NotEmpty().WithMessage(x => ValidationMessages.PasswordRequired)
+                .MinimumLength(6).WithMessage(x => ValidationMessages.PasswordMinLength);
 
             RuleFor(x => x.ConfirmPassword)
-                .NotEmpty().WithMessage("Please confirm your password")
-                .Equal(x => x.Password).WithMessage("Passwords do not match"); 
+                .NotEmpty().WithMessage(x => ValidationMessages.ConfirmPasswordRequired)
+                .Equal(x => x.Password).WithMessage(x => ValidationMessages.PasswordsDoNotMatch); 
         }
     }
 }

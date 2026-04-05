@@ -1,6 +1,7 @@
 ﻿using EventFlow.Application.Exceptions;
 using EventFlow.Application.GlobalSettings.Repositories;
 using EventFlow.Application.GlobalSettings.Requests;
+using EventFlow.Application.Localization;
 using Mapster;
 using Microsoft.Extensions.Caching.Memory;
 using System;
@@ -41,7 +42,7 @@ namespace EventFlow.Application.GlobalSettings
             var setting = await _repository.GetAsync(token,id);
 
             if (setting == null)
-                throw new NotFoundException("Setting not found", "GlobalSettingNotFound");
+                throw new NotFoundException(ErrorMessages.GlobalSettingNotFound, "GlobalSettingNotFound");
 
             setting.Value = model.Value;
 

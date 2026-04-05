@@ -1,4 +1,5 @@
 ﻿using EventFlow.Application.GlobalSettings.Requests;
+using EventFlow.Application.Localization;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
@@ -13,10 +14,10 @@ namespace EventFlow.Application.GlobalSettings.Validators
         public GlobalSettingsRequestCreateModelValidator()
         {
             RuleFor(x => x.Value)
-                .GreaterThanOrEqualTo(0).WithMessage("Value of global settings must be greater than or equal to 0");
+                .GreaterThanOrEqualTo(0).WithMessage(x => ValidationMessages.GlobalSettingValueMinimum);
             RuleFor(x => x.Key)
-               .NotEmpty().WithMessage("Global settings Key cannot be empty")
-               .MaximumLength(30).WithMessage("Global settings Key cannot contain more than 30 characters");
+               .NotEmpty().WithMessage(x => ValidationMessages.GlobalSettingKeyRequired)
+               .MaximumLength(30).WithMessage(x => ValidationMessages.GlobalSettingKeyMaxLength);
                
 
 

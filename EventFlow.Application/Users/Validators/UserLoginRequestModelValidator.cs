@@ -1,4 +1,5 @@
-﻿using EventFlow.Application.Users.Requests;
+﻿using EventFlow.Application.Localization;
+using EventFlow.Application.Users.Requests;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
@@ -13,12 +14,12 @@ namespace EventFlow.Application.Users.Validators
         public UserLoginRequestModelValidator()
         {
             RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email is required")
-                .EmailAddress().WithMessage("A valid email address is required")
+                .NotEmpty().WithMessage(x => ValidationMessages.EmailRequired)
+                .EmailAddress().WithMessage(x => ValidationMessages.InvalidEmailFormat)
                 .Matches(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
-                .WithMessage("Email can only contain English letters, numbers, and standard symbols.");
+                .WithMessage(x => ValidationMessages.InvalidEmailFormat);
             RuleFor(x => x.Password)
-                .NotEmpty().WithMessage("Password is required");
+                .NotEmpty().WithMessage(x => ValidationMessages.PasswordRequired);
         }
     }
 }

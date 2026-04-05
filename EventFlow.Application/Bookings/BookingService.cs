@@ -4,6 +4,7 @@ using EventFlow.Application.Bookings.Responses;
 using EventFlow.Application.Events.Repositories;
 using EventFlow.Application.Exceptions;
 using EventFlow.Application.GlobalSettings;
+using EventFlow.Application.Localization;
 using EventFlow.Domain.Bookings;
 using EventFlow.Domain.Constansts;
 using Mapster;
@@ -35,13 +36,13 @@ namespace EventFlow.Application.Bookings
         {
             var booking = await _bookingRepository.GetAsync(token, bookingId);
             if (booking == null)
-                throw new NotFoundException("Book does not exists", "BookingNotFound");
+                throw new NotFoundException(ErrorMessages.BookingNotFound, "BookingNotFound");
             if(booking.UserId != currentUserId)
-                throw new ForbiddenException("You do not have permission to buy ticket", "BookingPurchaseForbidden");
+                throw new ForbiddenException(ErrorMessages.BookingPurchaseForbidden, "BookingPurchaseForbidden");
             if (booking.ExpirationTime < DateTime.Now)
-                throw new BadRequestException("Booking has already expired", "BookingExpired");
+                throw new BadRequestException(ErrorMessages.BookingExpired, "BookingExpired");
             if (booking.IsPurchased)
-                throw new BadRequestException("Booking is already purchased", "BookingAlreadyPurchased");
+                throw new BadRequestException(ErrorMessages.BookingAlreadyPurchased, "BookingAlreadyPurchased");
 
             booking.IsPurchased = true;
             booking.ExpirationTime = DateTime.MaxValue;
@@ -53,11 +54,11 @@ namespace EventFlow.Application.Bookings
         {
             var booking = await _bookingRepository.GetAsync(token, bookingId);
             if (booking == null)
-                throw new NotFoundException("Book does not exists", "BookingNotFound");
+                throw new NotFoundException(ErrorMessages.BookingNotFound, "BookingNotFound");
             if (booking.UserId != currentUserId)
-                throw new ForbiddenException("You do not have permission to cancel this booking", "BookingCancelForbidden");
+                throw new ForbiddenException(ErrorMessages.BookingCancelForbidden, "BookingCancelForbidden");
             if (booking.IsPurchased)
-                throw new BadRequestException("Booking is already purchased, you cannot cancel it", "CannotCancelPurchasedBooking");
+                throw new BadRequestException(ErrorMessages.CannotCancelPurchasedBooking, "CannotCancelPurchasedBooking");
 
             var @event = await _eventRepository.GetAsync(token,booking.EventId);
             @event.AvailableTickets += booking.BookedTicketsCount;
@@ -73,9 +74,12 @@ namespace EventFlow.Application.Bookings
         {
             var @event = await _eventRepository.GetAsync(token, model.EventId);
             if (@event == null)
-                throw new NotFoundException("Event not found", "EventNotFound");
+                throw new NotFoundException(ErrorMessages.EventNotFound, "EventNotFound");
             if (@event.AvailableTickets < model.BookedTicketsCount)
-                throw new BadRequestException($"Not enough tickets available. Only {@event.AvailableTickets} left", "NotEnoughTickets");
+            {
+                var errorMessage = string.Format(ErrorMessages.NotEnoughTickets, @event.AvailableTickets);
+                throw new BadRequestException(errorMessage, "NotEnoughTickets");
+            }
 
             int maxTicketPerUser = 5;
             int bookingExpiratioinHours = await _globalSettingsService.GetByKeyAsync(GlobalSettingsKeys.BookingExpirationHours, token);
@@ -87,8 +91,11 @@ namespace EventFlow.Application.Bookings
             var maxTicketUserCouldBook = maxTicketPerUser - alreadyBookedTickets;
 
             if (model.BookedTicketsCount > maxTicketUserCouldBook)
-                throw new BadRequestException($"You have reached the limit. You can only book {maxTicketUserCouldBook} more tickets.", "UserTicketLimitReached");
-            var booking = model.Adapt<Booking>();
+            {
+                var errorMessage = string.Format(ErrorMessages.UserTicketLimitReached, maxTicketUserCouldBook);
+                throw new BadRequestException(errorMessage, "UserTicketLimitReached");
+            }
+                var booking = model.Adapt<Booking>();
           
 
             booking.IsPurchased = false;

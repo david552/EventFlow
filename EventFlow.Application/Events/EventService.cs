@@ -4,6 +4,7 @@ using EventFlow.Application.Events.Requests;
 using EventFlow.Application.Events.Responses;
 using EventFlow.Application.Exceptions;
 using EventFlow.Application.GlobalSettings;
+using EventFlow.Application.Localization;
 using EventFlow.Domain.Constansts;
 using EventFlow.Domain.Events;
 using Mapster;
@@ -42,7 +43,7 @@ namespace EventFlow.Application.Events
 
             if (@event != null)
                 return @event.Adapt<EventResponseModel>();
-            throw new NotFoundException(@"Event Not Found", "EventNotFound");
+            throw new NotFoundException(ErrorMessages.EventNotFound, "EventNotFound");
         }
         public async Task UpdateAsync(int id, EventRequestUpdateModel model, int currentUserId, CancellationToken token)
         {
@@ -50,17 +51,18 @@ namespace EventFlow.Application.Events
 
 
             if (existingEvent == null )
-                throw new NotFoundException("Event not found to update", "EventNotFound");
+                throw new NotFoundException(ErrorMessages.EventNotFound, "EventNotFound");
             if (existingEvent.UserId != currentUserId)
             {
-                throw new ForbiddenException("You don't have permission to update this event.", "EventUpdateForbidden");
+                throw new ForbiddenException(ErrorMessages.EventUpdateForbidden, "EventUpdateForbidden");
             }
 
             int allowedDaysForUpdate = await _globalSettingsService.GetByKeyAsync(GlobalSettingsKeys.EventEditAllowedDays, token);
 
             if (DateTime.Now > existingEvent.CreatedAt.AddDays(allowedDaysForUpdate))
             {
-                throw new BadRequestException($"The update period ({allowedDaysForUpdate} days) has expired.", "EventUpdatePeriodExpired");
+                var errorMessage = string.Format(ErrorMessages.EventUpdatePeriodExpired, allowedDaysForUpdate);
+                throw new BadRequestException(errorMessage, "EventUpdatePeriodExpired");
             }
 
             model.Adapt(existingEvent);

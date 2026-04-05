@@ -83,6 +83,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseMiddleware<CultureMiddleware>();
+
 app.UseAuthentication(); 
 app.UseAuthorization();
 
