@@ -132,6 +132,9 @@
   <data name="BookingPurchaseForbidden" xml:space="preserve">
     <value>თქვენ არ გაქვთ ამ ბილეთის ყიდვის უფლება</value>
   </data>
+  <data name="CannotActivateExpiredEvent" xml:space="preserve">
+    <value>ივენთი ვერ გააქტიურდება რადგან უკვე დასრულდა</value>
+  </data>
   <data name="CannotCancelPurchasedBooking" xml:space="preserve">
     <value>ჯავშანი უკვე შეძენილია, მისი გაუქმება შეუძლებელია</value>
   </data>
@@ -140,6 +143,9 @@
   </data>
   <data name="EmailRequired" xml:space="preserve">
     <value>ელ-ფოსტა სავალდებულოა</value>
+  </data>
+  <data name="EventIsInactive" xml:space="preserve">
+    <value>ივენთი არ არის აქტიური</value>
   </data>
   <data name="EventNotFound" xml:space="preserve">
     <value>ივენთი ვერ მოიძებნა</value>

@@ -7,31 +7,31 @@ using EventFlow.Application.GlobalSettings;
 using EventFlow.Application.GlobalSettings.Repositories;
 using EventFlow.Application.Users;
 using EventFlow.Application.Users.Repositories;
-using EventFlow.Infrastructure;
 using EventFlow.Infrastructure.Bookings;
 using EventFlow.Infrastructure.Events;
 using EventFlow.Infrastructure.GlobalSettings;
 using EventFlow.Infrastructure.Users;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace EventFlow.API.infrastructures.Extensions
+namespace EventFlow.Infrastructure
 {
-    public static class ServiceExtensions
+    public static class DependencyInjection
     {
-        public static void AddServices(this IServiceCollection services)
+        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
         {
-            services.AddScoped<IEventService, EventService>();
             services.AddScoped<IEventRepository, EventRepository>();
-            services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IGlobalSettingsService, GlobalSettingsService>();
             services.AddScoped<IGlobalSettingsRepository, GlobalSettingsRepository>();
-            services.AddScoped<IBookingService, BookingService>();
             services.AddScoped<IBookingRepository, BookingRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-
-
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+
+            return services;
         }
     }
 }

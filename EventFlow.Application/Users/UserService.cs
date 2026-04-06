@@ -1,27 +1,30 @@
 ﻿using EventFlow.Application.Exceptions;
+using EventFlow.Application.Localization;
 using EventFlow.Application.Users.Repositories;
 using EventFlow.Application.Users.Requests;
 using EventFlow.Application.Users.Responses;
 using EventFlow.Domain.Users;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EventFlow.Application.Localization;
 namespace EventFlow.Application.Users
 {
     public class UserService : IUserService
     {
         readonly UserManager<User> _userManager;
         readonly IUserRepository _repository;
+        readonly ILogger<UserService> _logger; 
 
-        public UserService(UserManager<User> userManager, IUserRepository repository)
+        public UserService(UserManager<User> userManager, IUserRepository repository, ILogger<UserService> logger)
         {
             _repository = repository;
             _userManager = userManager;
+            _logger = logger;
         }
         public async Task AssignModeratorRoleAsync(int userId, CancellationToken token)
         {
@@ -31,9 +34,11 @@ namespace EventFlow.Application.Users
 
             if(!await _userManager.IsInRoleAsync(user, "Moderator"))
             {
+
                 var result = await _userManager.AddToRoleAsync(user, "Moderator");
                 if (!result.Succeeded)
                     throw new BadRequestException(ErrorMessages.RoleAssignmentFailed, "RoleAssignmentFailed");
+                _logger.LogInformation("Assigned Moderator role to user {UserId}", userId); 
             }
             
         }
@@ -47,8 +52,10 @@ namespace EventFlow.Application.Users
 
             if (!result.Succeeded)
             {
+                _logger.LogWarning("Failed to delete user {UserId}", id);
                 throw new BadRequestException(ErrorMessages.UserDeletionFailed, "UserDeletionFailed");
             }
+            _logger.LogInformation("User {UserId} was successfully deleted", id);
 
         }
 
@@ -88,6 +95,7 @@ namespace EventFlow.Application.Users
 
             var roles = await _userManager.GetRolesAsync(user);
 
+            _logger.LogInformation("User {UserId} successfully logged in", user.Id);
             return new UserResponseModel
             {
                 Id = user.Id,
@@ -96,6 +104,7 @@ namespace EventFlow.Application.Users
                 LastName = user.LastName,
                 Roles = roles.ToList()
             };
+
         }
 
         public async Task RegisterAsync(UserRegisterRequestModel model, CancellationToken token)
@@ -124,6 +133,8 @@ namespace EventFlow.Application.Users
             }
 
             await _userManager.AddToRoleAsync(user, "User");
+            _logger.LogInformation("New user registered successfully with ID {UserId} and email {Email}", user.Id, user.Email);
         }
+
     }
 }

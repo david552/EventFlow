@@ -17,5 +17,6 @@ namespace EventFlow.Application.Bookings
         Task BuyAsync(int bookingId, int currentUserId, CancellationToken token);
 
         Task CancelAsync(int bookingId, int currentUserId, CancellationToken token);
+        Task CleanupExpiredBookingsAsync(CancellationToken token);
     }
 }

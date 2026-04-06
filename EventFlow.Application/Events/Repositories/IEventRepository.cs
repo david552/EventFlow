@@ -1,4 +1,5 @@
-﻿using EventFlow.Domain.Events;
+﻿using EventFlow.Domain.Bookings;
+using EventFlow.Domain.Events;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace EventFlow.Application.Events.Repositories
     public interface IEventRepository : IBaseRepository<Event>
     {
         Task<List<Event>> GetVisibleEventsAsync(CancellationToken token);
+        Task<List<Event>> GetExpiredEventsAsync(CancellationToken token);
 
     }
 }

@@ -1,8 +1,10 @@
 ﻿using EventFlow.API.infrastructures.Extensions;
 using EventFlow.API.infrastructures.JWT;
 using EventFlow.API.Middlewares;
+using EventFlow.Application;
 using EventFlow.Application.Users.Validators;
 using EventFlow.Domain.Users;
+using EventFlow.Infrastructure;
 using EventFlow.Persistence.Context;
 using EventFlow.Persistence.Seed;
 using FluentValidation;
@@ -10,9 +12,17 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.ClearProviders();
+
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -20,9 +30,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(opt =>
 {
-    opt.SwaggerDoc("v1", new OpenApiInfo { Title = "RealState API", Version = "v1" });
+    opt.SwaggerDoc("v1", new OpenApiInfo { Title = "EventFlow API", Version = "v1" });
 
-    // 1. განვსაზღვროთ უსაფრთხოების სქემა (Security Scheme)
     opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -33,7 +42,6 @@ builder.Services.AddSwaggerGen(opt =>
         Scheme = "Bearer"
     });
 
-    // 2. დავამატოთ მოთხოვნა, რომ Swagger-მა გამოიყენოს ეს სქემა
     opt.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -50,7 +58,8 @@ builder.Services.AddSwaggerGen(opt =>
     });
 });
 builder.Services.AddMemoryCache();
-builder.Services.AddServices();
+builder.Services.AddApplicationServices();
+builder.Services.AddInfrastructureServices(); 
 builder.Services.AddValidatorsFromAssembly(typeof(UserRegisterRequestModelValidator).Assembly);
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddTokenAuthentication(builder.Configuration["JWTConfiguration:Secret"]);
@@ -72,6 +81,8 @@ builder.Services.Configure<JWTConfiguration>(builder.Configuration.GetSection(na
 var app = builder.Build();
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
+
+app.UseSerilogRequestLogging();
 
 
 // Configure the HTTP request pipeline.

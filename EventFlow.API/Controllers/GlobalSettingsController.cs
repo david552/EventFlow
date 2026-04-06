@@ -9,11 +9,11 @@ namespace EventFlow.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = "Admin")]
-    public class AdminController : ControllerBase
+    public class GlobalSettingsController : ControllerBase
     {
         readonly IGlobalSettingsService _globalSettingaService;
 
-        public AdminController(IGlobalSettingsService globalSettingsService)
+        public GlobalSettingsController(IGlobalSettingsService globalSettingsService)
         {
             _globalSettingaService = globalSettingsService;
         }

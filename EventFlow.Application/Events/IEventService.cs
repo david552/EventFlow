@@ -20,5 +20,8 @@ namespace EventFlow.Application.Events
 
         Task DeleteAsync(int id, CancellationToken token);
 
+        Task DeactivateEndedEventsAsync(CancellationToken token);
+        Task ActivateEvent(int id, CancellationToken token);
+
     }
 }

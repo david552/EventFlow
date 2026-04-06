@@ -8,6 +8,7 @@ using EventFlow.Application.Localization;
 using EventFlow.Domain.Bookings;
 using EventFlow.Domain.Constansts;
 using Mapster;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,13 +24,16 @@ namespace EventFlow.Application.Bookings
         readonly IEventRepository _eventRepository;
         readonly IUnitOfWork _unitOfWork;
         readonly IGlobalSettingsService _globalSettingsService;
+        readonly ILogger<BookingService> _logger;
 
-        public BookingService(IBookingRepository bookingRepository, IEventRepository eventRepository, IUnitOfWork unitOdWork, IGlobalSettingsService globalSettingsService)
+        public BookingService(IBookingRepository bookingRepository, IEventRepository eventRepository, IUnitOfWork unitOdWork, IGlobalSettingsService globalSettingsService, ILogger<BookingService> logger)
         {
             _bookingRepository = bookingRepository;
             _eventRepository = eventRepository;
             _unitOfWork = unitOdWork;
             _globalSettingsService = globalSettingsService;
+            _logger = logger;
+            
         }
 
         public async Task BuyAsync(int bookingId, int currentUserId, CancellationToken token)
@@ -48,6 +52,8 @@ namespace EventFlow.Application.Bookings
             booking.ExpirationTime = DateTime.MaxValue;
             _bookingRepository.Update(booking);
             await _unitOfWork.SaveChanges(token);
+            _logger.LogInformation("Booking {BookingId} purchased by user {UserId}", bookingId, currentUserId);
+
         }
 
         public async Task CancelAsync(int bookingId, int currentUserId, CancellationToken token)
@@ -56,7 +62,10 @@ namespace EventFlow.Application.Bookings
             if (booking == null)
                 throw new NotFoundException(ErrorMessages.BookingNotFound, "BookingNotFound");
             if (booking.UserId != currentUserId)
+            {
+                _logger.LogWarning("User {UserId} attempted to cancel booking {BookingId} which belongs to another user!", currentUserId, bookingId);
                 throw new ForbiddenException(ErrorMessages.BookingCancelForbidden, "BookingCancelForbidden");
+            }
             if (booking.IsPurchased)
                 throw new BadRequestException(ErrorMessages.CannotCancelPurchasedBooking, "CannotCancelPurchasedBooking");
 
@@ -67,6 +76,8 @@ namespace EventFlow.Application.Bookings
             await _bookingRepository.RemoveAsync(token, bookingId);
 
             await _unitOfWork.SaveChanges(token);
+            _logger.LogInformation("Booking {BookingId} cancelled by user {UserId}", bookingId, currentUserId);
+
 
         }
 
@@ -75,6 +86,9 @@ namespace EventFlow.Application.Bookings
             var @event = await _eventRepository.GetAsync(token, model.EventId);
             if (@event == null)
                 throw new NotFoundException(ErrorMessages.EventNotFound, "EventNotFound");
+            if (!@event.IsActive)
+                throw new BadRequestException(ErrorMessages.EventIsInactive, "EventNotFound");
+
             if (@event.AvailableTickets < model.BookedTicketsCount)
             {
                 var errorMessage = string.Format(ErrorMessages.NotEnoughTickets, @event.AvailableTickets);
@@ -99,7 +113,7 @@ namespace EventFlow.Application.Bookings
           
 
             booking.IsPurchased = false;
-            booking.ExpirationTime = DateTime.Now.AddHours(bookingExpiratioinHours);
+            booking.ExpirationTime = DateTime.Now.AddSeconds(bookingExpiratioinHours);
             booking.UserId = currentUserId;
             booking.CreatedAt = DateTime.Now;
 
@@ -109,6 +123,7 @@ namespace EventFlow.Application.Bookings
             await _bookingRepository.AddAsync(token, booking);
 
             await _unitOfWork.SaveChanges(token);
+            _logger.LogInformation("Booking {BookingId} created for event {EventId} by user {UserId}", booking.Id, model.EventId, currentUserId);
             return booking.Id;
 
 
@@ -121,7 +136,28 @@ namespace EventFlow.Application.Bookings
                 return new List<BookingResponseModel>();
 
             return userBookings.Adapt<List<BookingResponseModel>>();
-  
+        }
+
+
+        public async Task CleanupExpiredBookingsAsync(CancellationToken token)
+        {
+            var expiredBookings = await _bookingRepository.GetExpiredBookingsAsync(token);
+            if (!expiredBookings.Any())
+            {
+                return; 
+            }
+
+            foreach (var booking in expiredBookings)
+            {
+                _logger.LogInformation("Expired booking {BookingId} for event {EventId} removed",booking.Id, booking.EventId);
+                booking.Event.AvailableTickets += booking.BookedTicketsCount;
+            }
+
+             _bookingRepository.DeleteRange(expiredBookings, token);
+
+            await _unitOfWork.SaveChanges(token);
+            _logger.LogInformation("Deleted {Count} expired bookings", expiredBookings.Count);
+
         }
     }
 }

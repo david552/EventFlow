@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36429.23 d17.14
+VisualStudioVersion = 17.14.36429.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventFlow.API", "EventFlow.API\EventFlow.API.csproj", "{B596D5BE-1B45-4517-931A-37855CCAA721}"
 EndProject
@@ -25,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventFlow.Workers", "EventFlow.Workers\EventFlow.Workers.csproj", "{D3536F6A-4DD0-4C55-A54F-DC4743A167AD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,6 +54,10 @@ Global
 		{08E2230C-FAAE-42BB-8069-42A3E05F27D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08E2230C-FAAE-42BB-8069-42A3E05F27D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08E2230C-FAAE-42BB-8069-42A3E05F27D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3536F6A-4DD0-4C55-A54F-DC4743A167AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3536F6A-4DD0-4C55-A54F-DC4743A167AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3536F6A-4DD0-4C55-A54F-DC4743A167AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3536F6A-4DD0-4C55-A54F-DC4743A167AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -19,7 +19,6 @@ namespace EventFlow.Infrastructure.Events
         {
         }
 
-   
 
         public async Task<List<Event>> GetVisibleEventsAsync(CancellationToken token)
         {
@@ -30,6 +29,11 @@ namespace EventFlow.Infrastructure.Events
 
         }
 
-     
+        public async Task<List<Event>> GetExpiredEventsAsync(CancellationToken token)
+        {
+            return await _dbSet.Where(x => x.EndTime < DateTime.Now && x.IsActive).ToListAsync();
+        }
+
+      
     }
 }

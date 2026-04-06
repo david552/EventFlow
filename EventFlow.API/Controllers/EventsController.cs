@@ -56,10 +56,21 @@ namespace EventFlow.API.Controllers
 
         }
 
+        [HttpPut("{id}/activate")]
+        [Authorize(Roles = "Admin")]
+        public async Task SetEventAsActive(int id, CancellationToken token)
+        {
+
+            await _eventService.ActivateEvent(id, token);
+
+        }
+
+
+
 
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Moderator")]
         public async Task Delete(int id, CancellationToken token)
         {
             await _eventService.DeleteAsync(id, token);

@@ -132,6 +132,9 @@
   <data name="BookingPurchaseForbidden" xml:space="preserve">
     <value>You do not have permission to buy this ticket</value>
   </data>
+  <data name="CannotActivateExpiredEvent" xml:space="preserve">
+    <value>Cannot activate an event that has already ended</value>
+  </data>
   <data name="CannotCancelPurchasedBooking" xml:space="preserve">
     <value>Booking is already purchased, you cannot cancel it</value>
   </data>
@@ -140,6 +143,9 @@
   </data>
   <data name="EmailRequired" xml:space="preserve">
     <value>Email is required</value>
+  </data>
+  <data name="EventIsInactive" xml:space="preserve">
+    <value>Event Is Inactive</value>
   </data>
   <data name="EventNotFound" xml:space="preserve">
     <value>Event not found</value>

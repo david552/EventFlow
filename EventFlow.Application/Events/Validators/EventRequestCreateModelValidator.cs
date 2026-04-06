@@ -24,11 +24,11 @@ namespace EventFlow.Application.Events.Validators
             RuleFor(x => x.TotalTickets)
                 .GreaterThan(0).WithMessage(x => ValidationMessages.TicketsGreaterThanZero);
 
-            RuleFor(x => x.StartDate)
+            RuleFor(x => x.StartTime)
                 .Must(date => date > DateTime.Now).WithMessage(x => ValidationMessages.StartDateInFuture);
 
-            RuleFor(x => x.EndDate)
-                .GreaterThan(x => x.StartDate).WithMessage(x => ValidationMessages.EndDateAfterStartDate);
+            RuleFor(x => x.EndTime)
+                .GreaterThan(x => x.StartTime).WithMessage(x => ValidationMessages.EndDateAfterStartDate);
         }
 
 

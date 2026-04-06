@@ -18,6 +18,23 @@ namespace EventFlow.Infrastructure.Bookings
         {
         }
 
+        public void  DeleteRange(IEnumerable<Booking> bookings, CancellationToken token)
+        {
+            if (bookings == null || !bookings.Any())
+            {
+                return;
+            }
+            _dbSet.RemoveRange(bookings);
+        }
+
+        public async Task<List<Booking>> GetExpiredBookingsAsync( CancellationToken token)
+        {
+            return await _dbSet
+                .Where(x => x.ExpirationTime <= DateTime.Now)
+                .Include(x=>x.Event)
+                .ToListAsync(token);
+        }
+
         public async Task<List<Booking>> GetUserBookingsWithEventAsync(int userId, CancellationToken token)
         {
           return   await _dbSet.Include(b => b.Event)

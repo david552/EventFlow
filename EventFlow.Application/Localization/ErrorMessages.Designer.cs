@@ -106,6 +106,15 @@ namespace EventFlow.Application.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot activate an event that has already ended.
+        /// </summary>
+        public static string CannotActivateExpiredEvent {
+            get {
+                return ResourceManager.GetString("CannotActivateExpiredEvent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Booking is already purchased, you cannot cancel it.
         /// </summary>
         public static string CannotCancelPurchasedBooking {
@@ -129,6 +138,15 @@ namespace EventFlow.Application.Localization {
         public static string EmailRequired {
             get {
                 return ResourceManager.GetString("EmailRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event Is Inactive.
+        /// </summary>
+        public static string EventIsInactive {
+            get {
+                return ResourceManager.GetString("EventIsInactive", resourceCulture);
             }
         }
         
