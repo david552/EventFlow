@@ -1,0 +1,42 @@
+﻿@model IEnumerable<EventFlow.Application.Events.Responses.EventResponseModel>
+@{
+    ViewData["Title"] = "Pending Events";
+}
+
+<h2 class="mb-4">Pending Events</h2>
+
+<table class="table table-bordered">
+    <thead class="table-light">
+        <tr>
+            <th>Title</th>
+            <th>Author ID</th>
+            <th>Start Time</th>
+            <th>Tickets</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Title</td>
+                    <td>@item.UserId</td>
+                    <td>@item.StartTime.ToString("g")</td>
+                    <td>@item.AvailableTickets</td>
+                    <td>
+                        <form asp-action="ApproveEvent" method="post">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr><td colspan="5">No pending events.</td></tr>
+        }
+    </tbody>
+</table>

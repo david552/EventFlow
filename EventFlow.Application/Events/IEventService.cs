@@ -5,12 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using X.PagedList;
 
 namespace EventFlow.Application.Events
 {
     public interface IEventService
     {
-        Task<List<EventResponseModel>> GetAllVisibleAsync(CancellationToken token);
+        Task<IPagedList<EventResponseModel>> GetPagedVisibleAsync(int pageNumber, int pageSize, CancellationToken token);
 
         Task<EventResponseModel?> GetByIdAsync(int id, CancellationToken token);
 
@@ -22,6 +23,8 @@ namespace EventFlow.Application.Events
 
         Task DeactivateEndedEventsAsync(CancellationToken token);
         Task ActivateEvent(int id, CancellationToken token);
+        Task<List<EventResponseModel>> GetPendingEvents(CancellationToken token);
+        Task<List<EventResponseModel>> GetEventsByUserIdAsync(int userId, CancellationToken token);
 
     }
 }

@@ -21,7 +21,7 @@ namespace EventFlow.Application.Events.Validators
                 .NotEmpty().WithMessage(x => ValidationMessages.DescriptionRequired)
                 .MaximumLength(2000).WithMessage(x => ValidationMessages.DescriptionMaxLength);
 
-            RuleFor(x => x.TotalTickets)
+            RuleFor(x => x.AvailableTickets)
                 .GreaterThan(0).WithMessage(x => ValidationMessages.TicketsGreaterThanZero);
 
             RuleFor(x => x.StartTime)

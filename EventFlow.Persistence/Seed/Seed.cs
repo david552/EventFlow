@@ -75,7 +75,8 @@ namespace EventFlow.Persistence.Seed
                 var settings = new List<GlobalSettings>
                 {
                     new GlobalSettings { Key = GlobalSettingsKeys.EventEditAllowedDays, Value = 3 },
-                    new GlobalSettings { Key = GlobalSettingsKeys.BookingExpirationHours, Value = 1 }
+                    new GlobalSettings { Key = GlobalSettingsKeys.BookingExpirationHours, Value = 1 },
+                    new GlobalSettings { Key = GlobalSettingsKeys.MaxTicketPerUser, Value = 5 },
                 };
 
                 await context.GlobalSettings.AddRangeAsync(settings);

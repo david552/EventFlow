@@ -1,4 +1,5 @@
 ﻿using EventFlow.Application.GlobalSettings.Requests;
+using EventFlow.Application.GlobalSettings.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,5 +13,7 @@ namespace EventFlow.Application.GlobalSettings
         public Task UpdateAsync(int id, GlobalSettingsRequestUpdateModel model, CancellationToken token);
         public Task<int> GetByKeyAsync(string key, CancellationToken token);
         public Task<int> CreateAsync(GlobalSettingsRequestCreateModel model, CancellationToken token);
+        public Task<List<GlobalSettingsResponseModel>> GetAllAsync(CancellationToken token);
+
     }
 }

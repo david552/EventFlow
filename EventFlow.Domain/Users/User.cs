@@ -15,7 +15,6 @@ namespace EventFlow.Domain.Users
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
 
-
         public  ICollection<Event> CreatedEvents { get; set; } = new List<Event>();
         public  ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 

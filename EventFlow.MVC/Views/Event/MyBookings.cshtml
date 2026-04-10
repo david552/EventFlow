@@ -1,0 +1,44 @@
+﻿@model List<EventFlow.Application.Bookings.Responses.BookingResponseModel>
+@{
+    ViewData["Title"] = "Cart";
+    var grouped = Model.GroupBy(x => x.EventTitle).ToList();
+}
+
+<h2 class="mb-4">My Cart</h2>
+
+@if (!grouped.Any())
+{
+    <p>Your cart is empty. <a asp-controller="Home" asp-action="Index">Browse events</a>.</p>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Event</th>
+                <th>Tickets Booked</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var group in grouped)
+            {
+                var firstItem = group.First();
+                <tr>
+                    <td>@group.Key</td>
+                    <td>@group.Sum(x => x.BookedTicketsCount)</td>
+                    <td>
+                        <form asp-controller="Event" asp-action="ConfirmPurchase" method="post" class="d-inline">
+                            <input type="hidden" name="bookingId" value="@firstItem.Id" />
+                            <button type="submit" class="btn btn-success btn-sm">Buy Now</button>
+                        </form>
+                        <form asp-controller="Event" asp-action="CancelBooking" method="post" class="d-inline">
+                            <input type="hidden" name="bookingId" value="@firstItem.Id" />
+                            <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

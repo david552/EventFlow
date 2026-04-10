@@ -7,6 +7,7 @@ using EventFlow.Application.GlobalSettings;
 using EventFlow.Application.Localization;
 using EventFlow.Domain.Bookings;
 using EventFlow.Domain.Constansts;
+using FluentValidation;
 using Mapster;
 using Microsoft.Extensions.Logging;
 using System;
@@ -25,15 +26,18 @@ namespace EventFlow.Application.Bookings
         readonly IUnitOfWork _unitOfWork;
         readonly IGlobalSettingsService _globalSettingsService;
         readonly ILogger<BookingService> _logger;
+        readonly IValidator<BookingRequestCreateModel> _createModelValidator;
 
-        public BookingService(IBookingRepository bookingRepository, IEventRepository eventRepository, IUnitOfWork unitOdWork, IGlobalSettingsService globalSettingsService, ILogger<BookingService> logger)
+        public BookingService(IBookingRepository bookingRepository, IEventRepository eventRepository, IUnitOfWork unitOdWork, IGlobalSettingsService globalSettingsService, ILogger<BookingService> logger, IValidator<BookingRequestCreateModel> createModelValidator)
         {
             _bookingRepository = bookingRepository;
             _eventRepository = eventRepository;
             _unitOfWork = unitOdWork;
             _globalSettingsService = globalSettingsService;
             _logger = logger;
-            
+            _createModelValidator = createModelValidator;
+
+
         }
 
         public async Task BuyAsync(int bookingId, int currentUserId, CancellationToken token)
@@ -83,6 +87,7 @@ namespace EventFlow.Application.Bookings
 
         public async Task<int> CreateAsync(BookingRequestCreateModel model, int currentUserId, CancellationToken token)
         {
+            await _createModelValidator.ValidateAndThrowAsync(model, token);
             var @event = await _eventRepository.GetAsync(token, model.EventId);
             if (@event == null)
                 throw new NotFoundException(ErrorMessages.EventNotFound, "EventNotFound");
@@ -94,15 +99,15 @@ namespace EventFlow.Application.Bookings
                 var errorMessage = string.Format(ErrorMessages.NotEnoughTickets, @event.AvailableTickets);
                 throw new BadRequestException(errorMessage, "NotEnoughTickets");
             }
-
-            int maxTicketPerUser = 5;
+            
+            int maxTicketPerUser = await _globalSettingsService.GetByKeyAsync(GlobalSettingsKeys.MaxTicketPerUser, token); ;
             int bookingExpiratioinHours = await _globalSettingsService.GetByKeyAsync(GlobalSettingsKeys.BookingExpirationHours, token);
 
             var alreadyBookedTickets = (await GetUserBookingsAsync(currentUserId, token))
                 .Where(b => b.EventId == model.EventId)
                 .Sum(b => b.BookedTicketsCount);
 
-            var maxTicketUserCouldBook = maxTicketPerUser - alreadyBookedTickets;
+            var maxTicketUserCouldBook = Math.Max(0, maxTicketPerUser - alreadyBookedTickets);
 
             if (model.BookedTicketsCount > maxTicketUserCouldBook)
             {

@@ -241,6 +241,15 @@ namespace EventFlow.Application.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to remove role.
+        /// </summary>
+        public static string RoleRemovalFailed {
+            get {
+                return ResourceManager.GetString("RoleRemovalFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to delete the user.
         /// </summary>
         public static string UserDeletionFailed {

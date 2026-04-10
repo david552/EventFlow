@@ -1,0 +1,73 @@
+﻿@model IEnumerable<EventFlow.Application.Users.Responses.UserResponseModel>
+@{
+    ViewData["Title"] = "Users";
+}
+
+<h2 class="mb-4">System Users</h2>
+
+<table class="table table-bordered">
+    <thead class="table-light">
+        <tr>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var user in Model)
+            {
+                bool isAdmin = user.Roles != null && user.Roles.Contains("Admin");
+                bool isModerator = user.Roles != null && user.Roles.Contains("Moderator");
+
+                <tr>
+                    <td>@user.FirstName @user.LastName</td>
+                    <td>@user.Email</td>
+                    <td>@user.UserName</td>
+                    <td>
+                        @if (isAdmin)
+                        {
+                            <span>Admin</span>
+                        }
+                        else if (isModerator)
+                        {
+
+                            <span>Moderator</span>
+                        }
+                        else
+                        {
+
+                            <span>User</span>
+                        }
+                    </td>
+                    <td>
+                        @if (!isAdmin)
+                        {
+                            @if (isModerator)
+                            {
+                                <form asp-controller="Admin" asp-action="RevokeModerator" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@user.Id" />
+                                    <button type="submit" class="btn btn-warning btn-sm">Revoke Mod</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form asp-controller="Admin" asp-action="MakeModerator" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@user.Id" />
+                                    <button type="submit" class="btn btn-success btn-sm">Make Mod</button>
+                                </form>
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr><td colspan="5">No users found.</td></tr>
+        }
+    </tbody>
+</table>

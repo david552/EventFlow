@@ -1,6 +1,7 @@
 ﻿using EventFlow.Application.Exceptions;
 using EventFlow.Application.GlobalSettings.Repositories;
 using EventFlow.Application.GlobalSettings.Requests;
+using EventFlow.Application.GlobalSettings.Responses;
 using EventFlow.Application.Localization;
 using Mapster;
 using Microsoft.Extensions.Caching.Memory;
@@ -35,6 +36,13 @@ namespace EventFlow.Application.GlobalSettings
             var value = setting?.Value ?? 0;
             _memoryCache.Set(key, value, TimeSpan.FromHours(1));
             return value;
+        }
+
+        public async Task<List<GlobalSettingsResponseModel>> GetAllAsync(CancellationToken token)
+        {
+            var settings = await _repository.GetAllAsync(token);
+
+            return settings.Adapt<List<GlobalSettingsResponseModel>>();
         }
 
         public async Task UpdateAsync(int id, GlobalSettingsRequestUpdateModel model, CancellationToken token)

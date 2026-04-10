@@ -11,5 +11,6 @@ namespace EventFlow.Application.GlobalSettings.Repositories
     public interface IGlobalSettingsRepository : IBaseRepository<GlobalSettingEntity>
     {
         Task<GlobalSettingEntity?> GetByKeyAsync(string key, CancellationToken token);
+        Task<List<GlobalSettingEntity>> GetAllAsync( CancellationToken token);
     }
 }

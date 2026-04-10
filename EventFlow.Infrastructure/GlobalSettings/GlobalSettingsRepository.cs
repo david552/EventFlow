@@ -16,9 +16,15 @@ namespace EventFlow.Infrastructure.GlobalSettings
         {
         }
 
+        public async Task<List<GlobalSettingEntity>> GetAllAsync(CancellationToken token)
+        {
+            return await _dbSet.AsNoTracking().ToListAsync();
+        }
+
         public async  Task<GlobalSettingEntity?> GetByKeyAsync(string key, CancellationToken token)
         {
             return await _dbSet.FirstOrDefaultAsync(x=>x.Key == key,token);
         }
+
     }
 }

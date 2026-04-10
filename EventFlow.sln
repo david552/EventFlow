@@ -28,6 +28,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventFlow.Workers", "EventFlow.Workers\EventFlow.Workers.csproj", "{D3536F6A-4DD0-4C55-A54F-DC4743A167AD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventFlow.MVC", "EventFlow.MVC\EventFlow.MVC.csproj", "{88DF9704-A8AB-44BA-8BC9-F4F549B63DB5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,10 @@ Global
 		{D3536F6A-4DD0-4C55-A54F-DC4743A167AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D3536F6A-4DD0-4C55-A54F-DC4743A167AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D3536F6A-4DD0-4C55-A54F-DC4743A167AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88DF9704-A8AB-44BA-8BC9-F4F549B63DB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88DF9704-A8AB-44BA-8BC9-F4F549B63DB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88DF9704-A8AB-44BA-8BC9-F4F549B63DB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88DF9704-A8AB-44BA-8BC9-F4F549B63DB5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -71,6 +77,7 @@ Global
 		{4014AFA7-E153-4361-AAFA-15E4D8DFD01A} = {1405C4B0-359C-4BFA-8A6E-7F468F27B001}
 		{C4B91C0B-72E3-4878-9E36-FE8CD7D922B8} = {21B53178-0EB1-41D8-9F3E-F0D45DFCD675}
 		{08E2230C-FAAE-42BB-8069-42A3E05F27D3} = {21B53178-0EB1-41D8-9F3E-F0D45DFCD675}
+		{88DF9704-A8AB-44BA-8BC9-F4F549B63DB5} = {7BEE2EE8-2EAA-4424-9EBF-E7CBE97702F4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6F643694-AEFB-4EED-857E-542A5C578FE1}

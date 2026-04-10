@@ -1,0 +1,71 @@
+﻿@model EventFlow.Application.Events.Responses.EventResponseModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="row mt-4">
+    <div class="col-md-8">
+        <h2>@Model.Title</h2>
+        <p class="text-muted">
+            @Model.StartTime.ToString("f") - @Model.EndTime.ToString("t")
+        </p>
+        <div class="mt-4">
+            <p>@Model.Description</p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-body text-center">
+                <h4>@Model.AvailableTickets Tickets Left</h4>
+                <hr />
+
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <div class="mb-3">
+                        <label>Quantity</label>
+                        <div class="d-flex justify-content-center">
+                            <button class="btn btn-outline-secondary" type="button" onclick="changeQuantity(-1)">-</button>
+                            <input type="number" id="displayQty" class="form-control text-center mx-2" value="1" style="width: 60px;" readonly>
+                            <button class="btn btn-outline-secondary" type="button" onclick="changeQuantity(1)">+</button>
+                        </div>
+                    </div>
+
+                    <button type="button" onclick="processBooking('Buy')" class="btn btn-primary w-100 mb-2">Buy Tickets</button>
+                    <button type="button" onclick="processBooking('Book')" class="btn btn-warning w-100">Book Tickets</button>
+                }
+                else
+                {
+                    <p>Please login to purchase tickets.</p>
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-primary w-100">Login</a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function changeQuantity(change) {
+            const input = document.getElementById('displayQty');
+            let newVal = parseInt(input.value) + change;
+            if (newVal >= 1 && newVal <= 5) {
+                input.value = newVal;
+            }
+        }
+
+        function processBooking(actionType) {
+            const eventId = "@Model.Id";
+            const quantity = document.getElementById('displayQty').value;
+            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+            fetch(`/Event/${actionType}?eventId=${eventId}&quantity=${quantity}`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'RequestVerificationToken': token
+                }
+            }).then(() => window.location.reload());
+        }
+    </script>
+}

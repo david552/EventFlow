@@ -10,5 +10,6 @@ namespace EventFlow.Domain.Constansts
     {
         public const string BookingExpirationHours = "BookingExpirationHours";
         public const string EventEditAllowedDays = "EventEditAllowedDays";
+        public const string MaxTicketPerUser = "MaxTicketPerUser";
     }
 }

@@ -1,0 +1,29 @@
+﻿@model List<EventFlow.Application.Bookings.Responses.BookingResponseModel>
+@{
+    ViewData["Title"] = "Orders";
+    var groupedOrders = Model.GroupBy(x => x.EventTitle).ToList();
+}
+
+<h2 class="mb-4">My Orders</h2>
+
+@if (!groupedOrders.Any())
+{
+    <p>Your order history is empty.</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var group in groupedOrders)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@group.Key</h5>
+                        <p class="card-text mb-2">Quantity: @group.Sum(x => x.BookedTicketsCount) tickets</p>
+                        <span class="badge bg-success">Purchased</span>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

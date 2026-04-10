@@ -1,0 +1,74 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@using System.Security.Claims 
+@model IPagedList<EventFlow.Application.Events.Responses.EventResponseModel>
+@{
+    ViewData["Title"] = "Home";
+    var currentUserId = User.Identity.IsAuthenticated 
+        ? User.FindFirstValue(ClaimTypes.NameIdentifier) 
+        : null;
+}
+
+<h2 class="mb-4">Upcoming Events</h2>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">@item.Title</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">@item.StartTime.ToString("g")</h6>
+                    <p class="card-text">
+                        @(item.Description.Length > 100 ? item.Description.Substring(0, 100) + "..." : item.Description)
+                    </p>
+                    <p><strong>Available Tickets:</strong> @item.AvailableTickets</p>
+
+                    <div class="mb-3">
+                        <a asp-controller="Home" asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Details</a>
+                        @if (currentUserId != null && item.UserId.ToString() == currentUserId)
+                        {
+                            <a asp-controller="Event" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Edit</a>
+                        }
+                    </div>
+
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <hr />
+                        <div class="d-flex align-items-center">
+                            <label class="me-2">Qty:</label>
+                            <input type="number" id="qty-@item.Id" class="form-control form-control-sm me-2" value="1" min="1" max="5" style="width: 70px;">
+                            <button type="button" onclick="processHomeBooking(@item.Id, 'Buy')" class="btn btn-primary btn-sm me-2">Buy</button>
+                            <button type="button" onclick="processHomeBooking(@item.Id, 'Book')" class="btn btn-success btn-sm">Book</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="mt-4">
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), 
+        new PagedListRenderOptions {
+            LiElementClasses = new[] { "page-item" },
+            PageClasses = new[] { "page-link" }
+        })
+</div>
+
+@section Scripts {
+    <script>
+        function processHomeBooking(eventId, actionType) {
+            const quantity = document.getElementById('qty-' + eventId).value;
+            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+            fetch(`/Event/${actionType}?eventId=${eventId}&quantity=${quantity}`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'RequestVerificationToken': token
+                }
+            }).then(() => window.location.reload());
+        }
+    </script>
+}

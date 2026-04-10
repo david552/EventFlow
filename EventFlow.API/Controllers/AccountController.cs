@@ -62,12 +62,7 @@ namespace EventFlow.API.Controllers
             await _userService.AssignModeratorRoleAsync(id, token);
         }
 
-        [HttpDelete("users/{id}")]
-        [Authorize(Roles = "Admin")]
-        public async Task DeleteUser(int id, CancellationToken token)
-        {
-            await _userService.DeleteUserAsync(id, token);
-        }
+
     }
 }
 

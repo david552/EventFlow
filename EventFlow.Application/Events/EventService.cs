@@ -1,6 +1,4 @@
-﻿using EventFlow.Application.Bookings;
-using EventFlow.Application.Bookings.Repositories;
-using EventFlow.Application.Events.Repositories;
+﻿using EventFlow.Application.Events.Repositories;
 using EventFlow.Application.Events.Requests;
 using EventFlow.Application.Events.Responses;
 using EventFlow.Application.Exceptions;
@@ -8,13 +6,11 @@ using EventFlow.Application.GlobalSettings;
 using EventFlow.Application.Localization;
 using EventFlow.Domain.Constansts;
 using EventFlow.Domain.Events;
+using FluentValidation;
 using Mapster;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using X.PagedList;
 
 namespace EventFlow.Application.Events
 {
@@ -24,21 +20,28 @@ namespace EventFlow.Application.Events
         readonly IEventRepository _eventRepository;
         readonly IGlobalSettingsService _globalSettingsService;
         readonly ILogger<EventService> _logger;
+        private readonly IValidator<EventRequestCreateModel> _createModelValidator;
+        private readonly IValidator<EventRequestUpdateModel> _updateModelValidator;
 
 
-        public EventService(IUnitOfWork unitOfWork, IEventRepository eventRepository, IGlobalSettingsService globalSettingsService, ILogger<EventService> logger)
+
+        public EventService(IUnitOfWork unitOfWork, IEventRepository eventRepository, IGlobalSettingsService globalSettingsService, ILogger<EventService> logger, IValidator<EventRequestCreateModel> createModelValidator, IValidator<EventRequestUpdateModel> updateModelValidator)
         {
             _eventRepository = eventRepository;
             _unitOfWork = unitOfWork;
             _globalSettingsService = globalSettingsService;
             _logger = logger;
+            _createModelValidator = createModelValidator;
+            _updateModelValidator = updateModelValidator;
         }
 
-        public async Task<List<EventResponseModel>> GetAllVisibleAsync(CancellationToken token)
+        public async Task<IPagedList<EventResponseModel>> GetPagedVisibleAsync(int pageNumber, int pageSize, CancellationToken token)
         {
-            var visiblEvents = await _eventRepository.GetVisibleEventsAsync(token);
+            var (items, totalCount) = await _eventRepository.GetVisiblePagedAsync(pageNumber, pageSize, token);
 
-            return visiblEvents.Adapt<List<EventResponseModel>>();
+            var mappedItems = items.Adapt<List<EventResponseModel>>();
+
+            return new StaticPagedList<EventResponseModel>(mappedItems, pageNumber, pageSize, totalCount);
         }
 
         public async Task<EventResponseModel?> GetByIdAsync(int id, CancellationToken token)
@@ -52,11 +55,14 @@ namespace EventFlow.Application.Events
 
         public async Task UpdateAsync(int id, EventRequestUpdateModel model, int currentUserId, CancellationToken token)
         {
+            await _updateModelValidator.ValidateAndThrowAsync(model, token);
+
             var existingEvent = await _eventRepository.GetAsync(token, id);
 
 
-            if (existingEvent == null )
+            if (existingEvent == null)
                 throw new NotFoundException(ErrorMessages.EventNotFound, "EventNotFound");
+
             if (existingEvent.UserId != currentUserId)
             {
                 _logger.LogWarning("Security: User {UserId} tried to update event {EventId} belonging to another user", currentUserId, id);
@@ -71,9 +77,9 @@ namespace EventFlow.Application.Events
                 throw new BadRequestException(errorMessage, "EventUpdatePeriodExpired");
             }
 
+            int ticketsToAddInTotalCount = model.AvailableTickets - existingEvent.AvailableTickets;
             model.Adapt(existingEvent);
-
-
+            existingEvent.TotalTickets = existingEvent.TotalTickets + ticketsToAddInTotalCount;
 
             await _unitOfWork.SaveChanges(token);
             _logger.LogInformation("Event {EventId} updated by user {UserId}", id, currentUserId);
@@ -81,6 +87,8 @@ namespace EventFlow.Application.Events
 
         public async Task<int> CreateAsync(EventRequestCreateModel model, int userId, CancellationToken token)
         {
+            await _createModelValidator.ValidateAndThrowAsync(model, token);
+
             var @event = model.Adapt<Event>();
             @event.UserId = userId;
             @event.IsActive = false;
@@ -95,11 +103,11 @@ namespace EventFlow.Application.Events
 
         public async Task DeleteAsync(int id, CancellationToken token)
         {
-            var @event = await _eventRepository.GetAsync(token,id);
+            var @event = await _eventRepository.GetAsync(token, id);
             if (@event == null)
                 throw new NotFoundException(ErrorMessages.EventNotFound, "EventNotFound");
 
-             _eventRepository.Remove(@event);
+            _eventRepository.Remove(@event);
             await _unitOfWork.SaveChanges(token);
             _logger.LogInformation("Event {EventId} deleted successfully}", id);
         }
@@ -110,7 +118,7 @@ namespace EventFlow.Application.Events
             if (!events.Any())
             {
                 _logger.LogDebug("There are no expired events to deactivate right now.");
-                return; 
+                return;
             }
             foreach (var @event in events)
             {
@@ -125,11 +133,11 @@ namespace EventFlow.Application.Events
         public async Task ActivateEvent(int id, CancellationToken token)
         {
             var @event = await _eventRepository.GetAsync(token, id);
-            if(@event == null)
+            if (@event == null)
                 throw new NotFoundException(ErrorMessages.EventNotFound, "EventNotFound");
             if (@event.IsActive)
                 return;
-            if(@event.EndTime < DateTime.Now)
+            if (@event.EndTime < DateTime.Now)
                 throw new BadRequestException(ErrorMessages.CannotActivateExpiredEvent, "CannotActivateExpiredEvent");
 
             @event.IsActive = true;
@@ -137,6 +145,20 @@ namespace EventFlow.Application.Events
             _logger.LogInformation("Event {EventId} activated", id);
 
 
+        }
+
+        public async Task<List<EventResponseModel>> GetPendingEvents(CancellationToken token)
+        {
+            var pendingEvents = await _eventRepository.GetPendingEventsAsync(token);
+
+            return pendingEvents.Adapt<List<EventResponseModel>>();
+        }
+
+        public async Task<List<EventResponseModel>> GetEventsByUserIdAsync(int userId, CancellationToken token)
+        {
+            var userEvents = await _eventRepository.GetByUserIdAsync(userId, token);
+
+            return userEvents.Adapt<List<EventResponseModel>>();
         }
     }
 }

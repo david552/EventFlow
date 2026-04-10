@@ -19,21 +19,38 @@ namespace EventFlow.Infrastructure.Events
         {
         }
 
-
-        public async Task<List<Event>> GetVisibleEventsAsync(CancellationToken token)
-        {
-
-            return await _dbSet.AsNoTracking()
-                  .Where(x => x.IsActive)
-                  .ToListAsync(token);
-
-        }
-
         public async Task<List<Event>> GetExpiredEventsAsync(CancellationToken token)
         {
             return await _dbSet.Where(x => x.EndTime < DateTime.Now && x.IsActive).ToListAsync();
         }
 
-      
+        public async Task<List<Event>> GetPendingEventsAsync(CancellationToken token)
+        {
+            return await _dbSet.Where(x => x.EndTime > DateTime.Now && !x.IsActive).ToListAsync();
+        }
+
+        public async Task<List<Event>> GetByUserIdAsync(int userId, CancellationToken token)
+        {
+            return await _context.Events
+                  .Where(e => e.UserId == userId)
+                  .ToListAsync(token);
+        }
+
+        public async Task<(List<Event> Items, int TotalCount)> GetVisiblePagedAsync(int pageNumber, int pageSize, CancellationToken token)
+        {
+            var query = _dbSet
+                .AsNoTracking()
+                .Where(x => x.IsActive)
+                .OrderByDescending(x => x.CreatedAt); 
+
+            var totalCount = await query.CountAsync(token);
+
+            var items = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(token);
+
+            return (items, totalCount);
+        }
     }
 }

@@ -20,10 +20,12 @@ namespace EventFlow.API.Controllers
         }
 
         [HttpGet]
-        public async Task<List<EventResponseModel>> GetAll(CancellationToken token)
+        public async Task<IEnumerable<EventResponseModel>> GetEvents([FromQuery] int page = 1,[FromQuery] int pageSize = 6,CancellationToken token = default)
         {
-            var events = await _eventService.GetAllVisibleAsync(token);
-            return  events.ToList();
+            var pagedResult = await _eventService.GetPagedVisibleAsync(page, pageSize, token);
+
+         
+            return pagedResult;
         }
 
         [HttpGet("{id}")]

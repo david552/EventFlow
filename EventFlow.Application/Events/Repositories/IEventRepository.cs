@@ -11,8 +11,11 @@ namespace EventFlow.Application.Events.Repositories
 {
     public interface IEventRepository : IBaseRepository<Event>
     {
-        Task<List<Event>> GetVisibleEventsAsync(CancellationToken token);
+        Task<(List<Event> Items, int TotalCount)> GetVisiblePagedAsync(int pageNumber, int pageSize, CancellationToken token);
         Task<List<Event>> GetExpiredEventsAsync(CancellationToken token);
+
+        Task<List<Event>> GetPendingEventsAsync(CancellationToken token);
+        Task<List<Event>> GetByUserIdAsync(int userId, CancellationToken token);
 
     }
 }

@@ -177,6 +177,9 @@
   <data name="RoleAssignmentFailed" xml:space="preserve">
     <value>როლის მინიჭება ვერ მოხერხდა</value>
   </data>
+  <data name="RoleRemovalFailed" xml:space="preserve">
+    <value>მოხდა შეცდომა. ვერ მოხერხდა როლის წაშლა</value>
+  </data>
   <data name="UserDeletionFailed" xml:space="preserve">
     <value>მომხმარებლის წაშლა ვერ მოხერხდა</value>
   </data>

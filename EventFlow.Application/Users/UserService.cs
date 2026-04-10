@@ -4,6 +4,7 @@ using EventFlow.Application.Users.Repositories;
 using EventFlow.Application.Users.Requests;
 using EventFlow.Application.Users.Responses;
 using EventFlow.Domain.Users;
+using FluentValidation;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -18,13 +19,16 @@ namespace EventFlow.Application.Users
     {
         readonly UserManager<User> _userManager;
         readonly IUserRepository _repository;
-        readonly ILogger<UserService> _logger; 
-
-        public UserService(UserManager<User> userManager, IUserRepository repository, ILogger<UserService> logger)
+        readonly ILogger<UserService> _logger;
+        readonly IValidator<UserRegisterRequestModel> _registerModelValidator;
+        readonly IValidator<UserLoginRequestModel> _loginModelValidator;
+        public UserService(UserManager<User> userManager, IUserRepository repository, ILogger<UserService> logger, IValidator<UserRegisterRequestModel> registerModelValidator, IValidator<UserLoginRequestModel> loginModelValidator)
         {
             _repository = repository;
             _userManager = userManager;
             _logger = logger;
+            _registerModelValidator = registerModelValidator;
+            _loginModelValidator = loginModelValidator;
         }
         public async Task AssignModeratorRoleAsync(int userId, CancellationToken token)
         {
@@ -42,22 +46,22 @@ namespace EventFlow.Application.Users
             }
             
         }
-
-        public async Task DeleteUserAsync(int id, CancellationToken token)
+        public async Task RemoveModeratorRoleAsync(int userId, CancellationToken token)
         {
-            var user = await _userManager.FindByIdAsync(id.ToString());
+            var user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null)
                 throw new NotFoundException(ErrorMessages.UserNotFound, "UserNotFound");
-            var result = await _userManager.DeleteAsync(user);
 
-            if (!result.Succeeded)
+            if (await _userManager.IsInRoleAsync(user, "Moderator"))
             {
-                _logger.LogWarning("Failed to delete user {UserId}", id);
-                throw new BadRequestException(ErrorMessages.UserDeletionFailed, "UserDeletionFailed");
-            }
-            _logger.LogInformation("User {UserId} was successfully deleted", id);
+                var result = await _userManager.RemoveFromRoleAsync(user, "Moderator");
+                if (!result.Succeeded)
+                    throw new BadRequestException(ErrorMessages.RoleRemovalFailed, "RoleRemovalFailed");
 
+                _logger.LogInformation("Removed Moderator role from user {UserId}", userId);
+            }
         }
+     
 
         public async Task<List<UserResponseModel>> GetAllUsersAsync(CancellationToken token)
         {
@@ -88,6 +92,7 @@ namespace EventFlow.Application.Users
 
         public async Task<UserResponseModel> AuthenticationAsync(UserLoginRequestModel model, CancellationToken token)
         {
+            await _loginModelValidator.ValidateAndThrowAsync(model, token);
             var user = await _userManager.FindByEmailAsync(model.Email);
 
             if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
@@ -109,6 +114,8 @@ namespace EventFlow.Application.Users
 
         public async Task RegisterAsync(UserRegisterRequestModel model, CancellationToken token)
         {
+            await _registerModelValidator.ValidateAndThrowAsync(model, token);
+
             var existingUser = await _userManager.FindByEmailAsync(model.Email);
             if (existingUser != null)
             {

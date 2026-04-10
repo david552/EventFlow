@@ -2,10 +2,12 @@
 using EventFlow.Infrastructure; 
 using EventFlow.Persistence.Context;
 using EventFlow.Workers.BackgroundWorkers;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using EventFlow.Application.Events.Requests;
 using Serilog;
 
 var configuration = new ConfigurationBuilder()
@@ -28,7 +30,7 @@ try
             services.AddApplicationServices();
             services.AddMemoryCache();
             services.AddInfrastructureServices();
-
+            services.AddValidatorsFromAssemblyContaining<EventRequestUpdateModel>();
             services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(hostContext.Configuration.GetConnectionString("DefaultConnection")));
             services.AddHostedService<CronTabExpiredBookingWorker>();

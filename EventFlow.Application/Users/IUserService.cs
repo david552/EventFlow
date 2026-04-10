@@ -15,6 +15,6 @@ namespace EventFlow.Application.Users
         Task<UserResponseModel> GetByIdAsync(int id, CancellationToken token);
         Task<List<UserResponseModel>> GetAllUsersAsync(CancellationToken token);
         Task AssignModeratorRoleAsync(int userId, CancellationToken token);
-        Task DeleteUserAsync(int id, CancellationToken token);
+        Task RemoveModeratorRoleAsync(int userId, CancellationToken token);
     }
 }
