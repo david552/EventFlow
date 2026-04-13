@@ -119,16 +119,12 @@ namespace EventFlow.Application.Users
             var existingUser = await _userManager.FindByEmailAsync(model.Email);
             if (existingUser != null)
             {
-
                 throw new BadRequestException(ErrorMessages.EmailAlreadyExists, "EmailAlreadyExists");
-
             }
             var user = model.Adapt<User>();
             user.UserName = model.Username;
 
             var result = await _userManager.CreateAsync(user, model.Password);
-
-
 
             if (!result.Succeeded)
             {
