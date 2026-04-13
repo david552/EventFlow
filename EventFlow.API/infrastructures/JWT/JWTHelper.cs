@@ -8,7 +8,7 @@ using System.Text;
 
 namespace EventFlow.API.infrastructures.JWT
 {
-    public static class JWTHealper
+    public static class JWTHelper
     {
         public static string GenerateSecurityToken(UserResponseModel user, IOptions<JWTConfiguration> options)
         {

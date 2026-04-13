@@ -74,7 +74,12 @@ namespace EventFlow.Application.Bookings
                 throw new BadRequestException(ErrorMessages.CannotCancelPurchasedBooking, "CannotCancelPurchasedBooking");
 
             var @event = await _eventRepository.GetAsync(token,booking.EventId);
+
+            if (@event == null)
+                throw new NotFoundException(ErrorMessages.EventNotFound, "EventNotFound");
+
             @event.AvailableTickets += booking.BookedTicketsCount;
+          
             _eventRepository.Update(@event);
 
             await _bookingRepository.RemoveAsync(token, bookingId);

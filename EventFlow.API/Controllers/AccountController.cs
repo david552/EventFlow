@@ -34,7 +34,7 @@ namespace EventFlow.API.Controllers
         {
             var userModel = await _userService.AuthenticationAsync(model, token);
 
-            return JWTHealper.GenerateSecurityToken(userModel, _options); 
+            return JWTHelper.GenerateSecurityToken(userModel, _options); 
         }
 
 
