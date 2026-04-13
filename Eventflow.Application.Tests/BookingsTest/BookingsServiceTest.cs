@@ -1,4 +1,5 @@
-﻿using EventFlow.Application.Bookings;
+﻿using Eventflow.Application.Tests.BookingsServiceTest.BookingsTest;
+using EventFlow.Application.Bookings;
 using EventFlow.Application.Bookings.Requests;
 using EventFlow.Application.Bookings.Responses;
 using EventFlow.Application.Exceptions;
@@ -10,8 +11,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json.Linq;
-
-namespace Eventflow.Application.Tests
+namespace Eventflow.Application.Tests.BookingsTest
 {
     public class BookingsServiceTest 
     {
@@ -20,7 +20,7 @@ namespace Eventflow.Application.Tests
 
         public BookingsServiceTest()
         {
-            _fixture = _fixture = new BookingServiceFixture(); 
+           _fixture = new BookingServiceFixture(); 
             
         }
         #region CancleAcync Tests

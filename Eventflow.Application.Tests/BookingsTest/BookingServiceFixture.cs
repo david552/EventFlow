@@ -9,7 +9,7 @@ using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace Eventflow.Application.Tests
+namespace Eventflow.Application.Tests.BookingsServiceTest.BookingsTest
 {
     public class BookingServiceFixture : IDisposable
     {

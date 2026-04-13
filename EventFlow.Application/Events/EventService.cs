@@ -109,7 +109,7 @@ namespace EventFlow.Application.Events
 
             _eventRepository.Remove(@event);
             await _unitOfWork.SaveChanges(token);
-            _logger.LogInformation("Event {EventId} deleted successfully}", id);
+            _logger.LogInformation("Event {EventId} deleted successfully", id);
         }
 
         public async Task DeactivateEndedEventsAsync(CancellationToken token)
