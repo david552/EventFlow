@@ -1,6 +1,8 @@
-﻿using EventFlow.API.infrastructures.Extensions;
+﻿using Asp.Versioning.ApiExplorer;
+using EventFlow.API.infrastructures.Extensions;
 using EventFlow.API.infrastructures.JWT;
 using EventFlow.API.Middlewares;
+using EventFlow.API.VersionSwagger;
 using EventFlow.Application;
 using EventFlow.Application.Users.Validators;
 using EventFlow.Domain.Users;
@@ -16,6 +18,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateBootstrapLogger();
@@ -34,11 +38,26 @@ try
 
     builder.Services.AddControllers();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
     builder.Services.AddEndpointsApiExplorer();
+
+    builder.Services.AddApiVersioning(options =>
+    {
+        options.DefaultApiVersion = new Asp.Versioning.ApiVersion(1, 0); 
+        options.AssumeDefaultVersionWhenUnspecified = true;
+        options.ReportApiVersions = true;
+    })
+.AddApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV"; 
+    options.SubstituteApiVersionInUrl = true;
+});
+
+    builder.Services.AddTransient<Microsoft.Extensions.Options.IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerGenOptions>();
+
     builder.Services.AddSwaggerGen(opt =>
     {
-        opt.SwaggerDoc("v1", new OpenApiInfo { Title = "EventFlow API", Version = "v1" });
-
+        opt.OperationFilter<SwaggerDefaultValues>();
         opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
         {
             In = ParameterLocation.Header,
@@ -64,6 +83,7 @@ try
         }
         });
     });
+
     builder.Services.AddMemoryCache();
     builder.Services.AddApplicationServices();
     builder.Services.AddInfrastructureServices();
@@ -103,7 +123,17 @@ try
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
-        app.UseSwaggerUI();
+        app.UseSwaggerUI(options =>
+        {
+            var descriptions = app.DescribeApiVersions();
+
+            foreach (var description in descriptions)
+            {
+                var url = $"/swagger/{description.GroupName}/swagger.json";
+                var name = description.GroupName.ToUpperInvariant();
+                options.SwaggerEndpoint(url, name);
+            }
+        });
     }
 
     app.UseHttpsRedirection();

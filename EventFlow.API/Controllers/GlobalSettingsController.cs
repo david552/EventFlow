@@ -1,4 +1,5 @@
-﻿using EventFlow.Application.GlobalSettings;
+﻿using Asp.Versioning;
+using EventFlow.Application.GlobalSettings;
 using EventFlow.Application.GlobalSettings.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -6,7 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EventFlow.API.Controllers
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [Authorize(Roles = "Admin")]
     public class GlobalSettingsController : ControllerBase

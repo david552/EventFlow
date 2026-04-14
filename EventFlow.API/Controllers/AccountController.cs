@@ -1,4 +1,5 @@
-﻿using EventFlow.API.infrastructures.JWT;
+﻿using Asp.Versioning;
+using EventFlow.API.infrastructures.JWT;
 using EventFlow.Application.Users;
 using EventFlow.Application.Users.Requests;
 using EventFlow.Application.Users.Responses;
@@ -9,7 +10,8 @@ using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 namespace EventFlow.API.Controllers
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")] 
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class AccountController : ControllerBase
     {

@@ -123,7 +123,7 @@ namespace EventFlow.Application.Bookings
           
 
             booking.IsPurchased = false;
-            booking.ExpirationTime = DateTime.Now.AddSeconds(bookingExpiratioinHours);
+            booking.ExpirationTime = DateTime.Now.AddHours(bookingExpiratioinHours);
             booking.UserId = currentUserId;
             booking.CreatedAt = DateTime.Now;
 

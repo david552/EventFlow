@@ -1,4 +1,5 @@
-﻿using EventFlow.Application.Bookings;
+﻿using Asp.Versioning;
+using EventFlow.Application.Bookings;
 using EventFlow.Application.Bookings.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -8,7 +9,8 @@ using System.Security.Principal;
 
 namespace EventFlow.API.Controllers
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [Authorize]
     public class BookingController : ControllerBase

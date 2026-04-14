@@ -1,4 +1,5 @@
-﻿using EventFlow.Application.Events;
+﻿using Asp.Versioning;
+using EventFlow.Application.Events;
 using EventFlow.Application.Events.Requests;
 using EventFlow.Application.Events.Responses;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +9,8 @@ using System.Security.Claims;
 
 namespace EventFlow.API.Controllers
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class EventsController : ControllerBase
     {
@@ -32,10 +34,8 @@ namespace EventFlow.API.Controllers
         [Authorize]
         public async Task<EventResponseModel> GetById(int id, CancellationToken token)
         {
-      
                 var @event = await _eventService.GetByIdAsync(id, token);
                 return @event;
-           
         }
 
         [HttpPost]
