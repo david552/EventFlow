@@ -101,9 +101,9 @@ namespace EventFlow.Persistence.Seed
                         Description = "Get ready for an unforgettable autumn evening! Mushtaidi Park is hosting the finest jazz bands in Tbilisi. Enjoy wine tasting, live music, and a fantastic atmosphere.",
                         TotalTickets = 150,
                         AvailableTickets = 150,
-                        StartTime = DateTime.Now.AddDays(10),
-                        EndTime = DateTime.Now.AddDays(10).AddHours(4),
-                        CreatedAt = DateTime.Now,
+                        StartTime = DateTime.UtcNow.AddDays(10),
+                        EndTime = DateTime.UtcNow.AddDays(10).AddHours(4),
+                        CreatedAt = DateTime.UtcNow,
                         IsActive = true, 
                         UserId = nino.Id
                     },
@@ -113,9 +113,9 @@ namespace EventFlow.Persistence.Seed
                         Description = "An exclusive technical workshop for senior developers. We will dive deep into Clean Architecture, CQRS, and Microservices patterns. Seats are strictly limited.",
                         TotalTickets = 50,
                         AvailableTickets = 50,
-                        StartTime = DateTime.Now.AddDays(20),
-                        EndTime = DateTime.Now.AddDays(20).AddHours(6),
-                        CreatedAt = DateTime.Now,
+                        StartTime = DateTime.UtcNow.AddDays(20),
+                        EndTime = DateTime.UtcNow.AddDays(20).AddHours(6),
+                        CreatedAt = DateTime.UtcNow,
                         IsActive = true,
                         UserId = sandro.Id
                     },
@@ -125,9 +125,9 @@ namespace EventFlow.Persistence.Seed
                         Description = "Celebrate the opening of the winter season in Bakuriani! Join us for electronic music, thrilling snowboard competitions, and a massive open-air party at Didveli.",
                         TotalTickets = 500,
                         AvailableTickets = 500,
-                        StartTime = DateTime.Now.AddMonths(3),
-                        EndTime = DateTime.Now.AddMonths(3).AddDays(2),
-                        CreatedAt = DateTime.Now,
+                        StartTime = DateTime.UtcNow.AddMonths(3),
+                        EndTime = DateTime.UtcNow.AddMonths(3).AddDays(2),
+                        CreatedAt = DateTime.UtcNow,
                         IsActive = false, 
                         UserId = nino.Id
                     }

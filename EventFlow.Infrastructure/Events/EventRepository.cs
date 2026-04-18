@@ -21,12 +21,14 @@ namespace EventFlow.Infrastructure.Events
 
         public async Task<List<Event>> GetExpiredEventsAsync(CancellationToken token)
         {
-            return await _dbSet.Where(x => x.EndTime < DateTime.Now && x.IsActive).ToListAsync();
+            var currentTime = DateTime.UtcNow;
+            return await _dbSet.Where(x => x.EndTime < currentTime && x.IsActive).ToListAsync();
         }
 
         public async Task<List<Event>> GetPendingEventsAsync(CancellationToken token)
         {
-            return await _dbSet.Where(x => x.EndTime > DateTime.Now && !x.IsActive).ToListAsync();
+            var currentTime = DateTime.UtcNow;
+            return await _dbSet.Where(x => x.EndTime > currentTime && !x.IsActive).ToListAsync();
         }
 
         public async Task<List<Event>> GetByUserIdAsync(int userId, CancellationToken token)

@@ -309,8 +309,8 @@ namespace Eventflow.Application.Tests.BookingsTest
             Assert.Equal(model.EventId, addedBooking.EventId);
             Assert.Equal(model.BookedTicketsCount, addedBooking.BookedTicketsCount);
 
-            Assert.True(addedBooking.CreatedAt <= DateTime.Now);
-            Assert.True(addedBooking.ExpirationTime > DateTime.Now);
+            Assert.True(addedBooking.CreatedAt <= DateTime.UtcNow);
+            Assert.True(addedBooking.ExpirationTime > DateTime.UtcNow);
 
             _fixture.EventRepoMock.Verify(x => x.Update(@event), Times.Once);
             _fixture.BookingRepoMock.Verify(x => x.AddAsync(token, It.IsAny<Booking>()), Times.Once);
@@ -517,7 +517,7 @@ namespace Eventflow.Application.Tests.BookingsTest
             var booking = new Booking
             {
                 Id = bookingId,
-                ExpirationTime = DateTime.Now.AddMinutes(-1),
+                ExpirationTime = DateTime.UtcNow.AddMinutes(-1),
                 UserId = currentUserId,
                 IsPurchased = true
             };

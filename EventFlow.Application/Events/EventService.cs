@@ -92,7 +92,9 @@ namespace EventFlow.Application.Events
             var @event = model.Adapt<Event>();
             @event.UserId = userId;
             @event.IsActive = false;
-            @event.CreatedAt = DateTime.Now;
+            @event.CreatedAt = DateTime.UtcNow;
+            @event.StartTime = DateTime.SpecifyKind(model.StartTime, DateTimeKind.Utc);
+            @event.EndTime = DateTime.SpecifyKind(model.EndTime, DateTimeKind.Utc);
             @event.AvailableTickets = @event.TotalTickets;
 
             await _eventRepository.AddAsync(token, @event);
@@ -137,7 +139,7 @@ namespace EventFlow.Application.Events
                 throw new NotFoundException(ErrorMessages.EventNotFound, "EventNotFound");
             if (@event.IsActive)
                 return;
-            if (@event.EndTime < DateTime.Now)
+            if (@event.EndTime < DateTime.UtcNow)
                 throw new BadRequestException(ErrorMessages.CannotActivateExpiredEvent, "CannotActivateExpiredEvent");
 
             @event.IsActive = true;

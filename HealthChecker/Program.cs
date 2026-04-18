@@ -18,7 +18,10 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
-app.MapHealthChecksUI();
+app.MapHealthChecksUI(options =>
+{
+    options.UIPath = "/"; 
+});
 
 
 app.Run();

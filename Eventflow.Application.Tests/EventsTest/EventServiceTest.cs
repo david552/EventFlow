@@ -141,7 +141,7 @@ namespace Eventflow.Application.Tests.EventsTest
 
             var @event = new Event()
             {
-                CreatedAt = DateTime.Now.AddDays(-2),
+                CreatedAt = DateTime.UtcNow.AddDays(-2),
                 UserId = 1
             };
 
@@ -174,7 +174,7 @@ namespace Eventflow.Application.Tests.EventsTest
             var @event = new Event()
             {
                 TotalTickets = 100,
-                CreatedAt = DateTime.Now.AddDays(2),
+                CreatedAt = DateTime.UtcNow.AddDays(2),
                 UserId = 1,
                 AvailableTickets = 60
             };
@@ -213,8 +213,8 @@ namespace Eventflow.Application.Tests.EventsTest
                 Title = "Title",
                 Description = "Description",
                 TotalTickets = 10,
-                StartTime = DateTime.Now.AddDays(1),
-                EndTime = DateTime.Now.AddDays(2),
+                StartTime = DateTime.UtcNow.AddDays(1),
+                EndTime = DateTime.UtcNow.AddDays(2),
 
             };
 
@@ -376,7 +376,7 @@ namespace Eventflow.Application.Tests.EventsTest
             {
                 Id = eventId,
                 IsActive = false,
-                EndTime = DateTime.Now.AddDays(-1) 
+                EndTime = DateTime.UtcNow.AddDays(-1) 
             };
 
             _fixture.EventRepoMock.Setup(x => x.GetAsync(token, eventId)).ReturnsAsync(@event);
@@ -399,7 +399,7 @@ namespace Eventflow.Application.Tests.EventsTest
             {
                 Id = eventId,
                 IsActive = false,
-                EndTime = DateTime.Now.AddDays(5) 
+                EndTime = DateTime.UtcNow.AddDays(5) 
             };
 
             _fixture.EventRepoMock.Setup(x => x.GetAsync(token, eventId)).ReturnsAsync(@event);

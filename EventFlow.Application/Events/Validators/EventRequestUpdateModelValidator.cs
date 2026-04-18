@@ -25,7 +25,7 @@ namespace EventFlow.Application.Events.Validators
                 .GreaterThan(0).WithMessage(x => ValidationMessages.TicketsGreaterThanZero);
 
             RuleFor(x => x.StartTime)
-                .Must(date => date > DateTime.Now).WithMessage(x => ValidationMessages.StartDateInFuture);
+                .Must(date => date > DateTime.UtcNow).WithMessage(x => ValidationMessages.StartDateInFuture);
 
             RuleFor(x => x.EndTime)
                 .GreaterThan(x => x.StartTime).WithMessage(x => ValidationMessages.EndDateAfterStartDate);

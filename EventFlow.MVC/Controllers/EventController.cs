@@ -24,6 +24,7 @@ namespace EventFlow.MVC.Controllers
 
         private int CurrentUserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
+        #region Events
         [HttpGet]
         public IActionResult Create() => View();
 
@@ -35,7 +36,11 @@ namespace EventFlow.MVC.Controllers
 
             try
             {
+
                 var request = model.Adapt<EventRequestCreateModel>();
+
+                request.StartTime = model.StartTime.ToUniversalTime();
+                request.EndTime = model.EndTime.ToUniversalTime();
 
                 await _eventService.CreateAsync(request, CurrentUserId, token);
 
@@ -76,6 +81,10 @@ namespace EventFlow.MVC.Controllers
             try
             {
                 var request = model.Adapt<EventRequestUpdateModel>();
+
+                request.StartTime = model.StartTime.ToUniversalTime();
+                request.EndTime = model.EndTime.ToUniversalTime();
+
                 await _eventService.UpdateAsync(id, request, CurrentUserId, token);
                 return RedirectToAction("Details", "Home", new { id });
             }
@@ -91,7 +100,17 @@ namespace EventFlow.MVC.Controllers
                 return RedirectToAction("Details", "Home", new { id = id });
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> MyEvents(CancellationToken token)
+        {
+            var myEvents = await _eventService.GetEventsByUserIdAsync(CurrentUserId, token);
 
+            return View(myEvents);
+        }
+        #endregion
+
+
+        #region Bookings
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Buy(int eventId, int quantity, CancellationToken token)
@@ -195,12 +214,7 @@ namespace EventFlow.MVC.Controllers
             return RedirectToAction(nameof(MyBookings));
         }
 
-        [HttpGet]
-        public async Task<IActionResult> MyEvents(CancellationToken token)
-        {
-            var myEvents = await _eventService.GetEventsByUserIdAsync(CurrentUserId, token);
 
-            return View(myEvents);
-        }
     }
+    #endregion
 }

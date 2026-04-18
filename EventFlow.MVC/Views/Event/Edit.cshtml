@@ -34,12 +34,14 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label asp-for="StartTime" class="form-label">Start Time</label>
-                    <input asp-for="StartTime" class="form-control" type="datetime-local" />
+                    <input id="uiStartTime" class="form-control" type="datetime-local" required />
+                    <input type="hidden" asp-for="StartTime" id="serverStartTime" value="@Model.StartTime.ToString("yyyy-MM-ddTHH:mm:ssZ")" />
                     <span asp-validation-for="StartTime" class="text-danger"></span>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label asp-for="EndTime" class="form-label">End Time</label>
-                    <input asp-for="EndTime" class="form-control" type="datetime-local" />
+                    <input id="uiEndTime" class="form-control" type="datetime-local" required />
+                    <input type="hidden" asp-for="EndTime" id="serverEndTime" value="@Model.EndTime.ToString("yyyy-MM-ddTHH:mm:ssZ")" />
                     <span asp-validation-for="EndTime" class="text-danger"></span>
                 </div>
             </div>
@@ -56,4 +58,40 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        function toLocalIsoString(date) {
+            const tzOffset = date.getTimezoneOffset() * 60000;
+            return (new Date(date.getTime() - tzOffset)).toISOString().slice(0, 16);
+        }
+
+        function loadInitialDates() {
+            const serverStartStr = document.getElementById('serverStartTime').value;
+            const serverEndStr = document.getElementById('serverEndTime').value;
+
+            if (serverStartStr) {
+                document.getElementById('uiStartTime').value = toLocalIsoString(new Date(serverStartStr));
+            }
+            if (serverEndStr) {
+                document.getElementById('uiEndTime').value = toLocalIsoString(new Date(serverEndStr));
+            }
+        }
+
+        function updateHiddenDates() {
+            const uiStart = document.getElementById('uiStartTime').value;
+            const uiEnd = document.getElementById('uiEndTime').value;
+
+            if (uiStart) {
+                document.getElementById('serverStartTime').value = new Date(uiStart).toISOString();
+            }
+            if (uiEnd) {
+                document.getElementById('serverEndTime').value = new Date(uiEnd).toISOString();
+            }
+        }
+
+        document.getElementById('uiStartTime').addEventListener('change', updateHiddenDates);
+        document.getElementById('uiEndTime').addEventListener('change', updateHiddenDates);
+
+        document.addEventListener('DOMContentLoaded', loadInitialDates);
+    </script>
 }

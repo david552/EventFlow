@@ -1,0 +1,67 @@
+﻿version: '3.8'
+
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: eventflow-sql
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=EventFlow_SuperSecret123!
+    ports:
+      - "1433:1433"
+    volumes:
+      - eventflow_sqldata:/var/opt/mssql
+
+  api:
+    build:
+      context: .
+      dockerfile: EventFlow.API/Dockerfile 
+    container_name: eventflow-api
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=db;Database=EventFlowDb;User Id=sa;Password=EventFlow_SuperSecret123!;TrustServerCertificate=True
+    depends_on:
+      - db
+
+  mvc:
+    build:
+      context: .
+      dockerfile: EventFlow.MVC/Dockerfile 
+    container_name: eventflow-mvc
+    restart: on-failure
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=db;Database=EventFlowDb;User Id=sa;Password=EventFlow_SuperSecret123!;TrustServerCertificate=True
+    depends_on:
+      - db
+
+  worker:
+    build:
+      context: .
+      dockerfile: EventFlow.Workers/Dockerfile
+    container_name: eventflow-worker
+    restart: on-failure
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=db;Database=EventFlowDb;User Id=sa;Password=EventFlow_SuperSecret123!;TrustServerCertificate=True
+    depends_on:
+      - db
+
+  health:
+    build:
+      context: .
+      dockerfile: HealthChecker/Dockerfile 
+    container_name: eventflow-health
+    ports:
+      - "8888:8080"
+    depends_on:
+      - api
+      - db
+
+volumes:
+  eventflow_sqldata:

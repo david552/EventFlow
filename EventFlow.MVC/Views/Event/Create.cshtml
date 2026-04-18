@@ -28,14 +28,18 @@
                     <input asp-for="TotalTickets" class="form-control" type="number" />
                     <span asp-validation-for="TotalTickets" class="text-danger"></span>
                 </div>
+
                 <div class="col-md-4 mb-3">
                     <label asp-for="StartTime" class="form-label">Start Time</label>
-                    <input asp-for="StartTime" class="form-control" type="datetime-local" />
+                    <input id="uiStartTime" class="form-control" type="datetime-local" value="@Model?.StartTime.ToString("yyyy-MM-ddTHH:mm")" required />
+                    <input type="hidden" asp-for="StartTime" id="serverStartTime" />
                     <span asp-validation-for="StartTime" class="text-danger"></span>
                 </div>
+
                 <div class="col-md-4 mb-3">
                     <label asp-for="EndTime" class="form-label">End Time</label>
-                    <input asp-for="EndTime" class="form-control" type="datetime-local" />
+                    <input id="uiEndTime" class="form-control" type="datetime-local" value="@Model?.EndTime.ToString("yyyy-MM-ddTHH:mm")" required />
+                    <input type="hidden" asp-for="EndTime" id="serverEndTime" />
                     <span asp-validation-for="EndTime" class="text-danger"></span>
                 </div>
             </div>
@@ -52,4 +56,23 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        function updateHiddenDates() {
+            const uiStart = document.getElementById('uiStartTime').value;
+            const uiEnd = document.getElementById('uiEndTime').value;
+
+            if (uiStart) {
+                document.getElementById('serverStartTime').value = new Date(uiStart).toISOString();
+            }
+            if (uiEnd) {
+                document.getElementById('serverEndTime').value = new Date(uiEnd).toISOString();
+            }
+        }
+
+        document.getElementById('uiStartTime').addEventListener('change', updateHiddenDates);
+        document.getElementById('uiEndTime').addEventListener('change', updateHiddenDates);
+
+        document.addEventListener('DOMContentLoaded', updateHiddenDates);
+    </script>
 }

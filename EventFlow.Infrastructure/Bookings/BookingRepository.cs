@@ -29,8 +29,10 @@ namespace EventFlow.Infrastructure.Bookings
 
         public async Task<List<Booking>> GetExpiredBookingsAsync( CancellationToken token)
         {
+            var currentTime = DateTime.UtcNow;
+
             return await _dbSet
-                .Where(x => x.ExpirationTime <= DateTime.Now)
+                .Where(x => x.ExpirationTime <= currentTime)
                 .Include(x=>x.Event)
                 .ToListAsync(token);
         }

@@ -18,7 +18,11 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">@item.Title</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">@item.StartTime.ToString("g")</h6>
+                    <h6 class="card-subtitle mb-2 text-muted">
+                        <span class="local-datetime" data-utc="@item.StartTime.ToString("yyyy-MM-ddTHH:mm:ssZ")">
+                            @item.StartTime.ToString("g")
+                        </span>
+                    </h6>
                     <p class="card-text">
                         @(item.Description.Length > 100 ? item.Description.Substring(0, 100) + "..." : item.Description)
                     </p>
@@ -70,5 +74,20 @@
                 }
             }).then(() => window.location.reload());
         }
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll('.local-datetime').forEach(function (el) {
+                const utcString = el.getAttribute('data-utc');
+                if (utcString) {
+                    const date = new Date(utcString);
+                    el.textContent = date.toLocaleString(undefined, { 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric', 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    });
+                }
+            });
+        });
     </script>
 }

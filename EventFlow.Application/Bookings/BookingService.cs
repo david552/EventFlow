@@ -47,7 +47,7 @@ namespace EventFlow.Application.Bookings
                 throw new NotFoundException(ErrorMessages.BookingNotFound, "BookingNotFound");
             if(booking.UserId != currentUserId)
                 throw new ForbiddenException(ErrorMessages.BookingPurchaseForbidden, "BookingPurchaseForbidden");
-            if (booking.ExpirationTime < DateTime.Now)
+            if (booking.ExpirationTime < DateTime.UtcNow)
                 throw new BadRequestException(ErrorMessages.BookingExpired, "BookingExpired");
             if (booking.IsPurchased)
                 throw new BadRequestException(ErrorMessages.BookingAlreadyPurchased, "BookingAlreadyPurchased");
@@ -123,9 +123,9 @@ namespace EventFlow.Application.Bookings
           
 
             booking.IsPurchased = false;
-            booking.ExpirationTime = DateTime.Now.AddHours(bookingExpiratioinHours);
+            booking.ExpirationTime = DateTime.UtcNow.AddHours(bookingExpiratioinHours);
             booking.UserId = currentUserId;
-            booking.CreatedAt = DateTime.Now;
+            booking.CreatedAt = DateTime.UtcNow;
 
             @event.AvailableTickets -= model.BookedTicketsCount;
             _eventRepository.Update(@event);

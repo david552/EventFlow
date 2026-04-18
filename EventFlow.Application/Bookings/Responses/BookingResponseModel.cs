@@ -1,7 +1,9 @@
-﻿using System;
+﻿using EventFlow.Application.Helper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace EventFlow.Application.Bookings.Responses
@@ -12,7 +14,10 @@ namespace EventFlow.Application.Bookings.Responses
         public int EventId { get; set; }
         public string EventTitle { get; set; } = string.Empty;
         public int BookedTicketsCount { get; set; }
+
+        [JsonConverter(typeof(UtcDateTimeConverter))]
         public DateTime CreatedAt { get; set; }
+        [JsonConverter(typeof(UtcDateTimeConverter))]
         public DateTime ExpirationTime { get; set; }
         public bool IsPurchased { get; set; }
     }

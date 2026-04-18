@@ -7,7 +7,13 @@
     <div class="col-md-8">
         <h2>@Model.Title</h2>
         <p class="text-muted">
-            @Model.StartTime.ToString("f") - @Model.EndTime.ToString("t")
+            <span class="local-datetime" data-utc="@Model.StartTime.ToString("yyyy-MM-ddTHH:mm:ssZ")">
+                @Model.StartTime.ToString("f")
+            </span>
+            -
+            <span class="local-datetime" data-utc="@Model.EndTime.ToString("yyyy-MM-ddTHH:mm:ssZ")">
+                @Model.EndTime.ToString("t")
+            </span>
         </p>
         <div class="mt-4">
             <p>@Model.Description</p>
@@ -67,5 +73,20 @@
                 }
             }).then(() => window.location.reload());
         }
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll('.local-datetime').forEach(function (el) {
+                const utcString = el.getAttribute('data-utc');
+                if (utcString) {
+                    const date = new Date(utcString);
+                    el.textContent = date.toLocaleString(undefined, {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                }
+            });
+        });
     </script>
 }
